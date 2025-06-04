@@ -452,7 +452,7 @@ export const COPDDecisionSupport: React.FC = () => {
             <span className="font-semibold text-yellow-800">Important</span>
           </div>
           <p className="text-yellow-700 text-base">
-            Une spirométrie post-bronchodilatateur montrant un rapport VEMS/CVF {"<"} 0,7 est nécessaire pour confirmer le diagnostic de BPCO.
+            Une spirométrie post-bronchodilatateur montrant un rapport VEMS/CVF &lt; 0,7 est nécessaire pour confirmer le diagnostic de BPCO.
           </p>
         </div>
         
@@ -907,7 +907,7 @@ export const COPDDecisionSupport: React.FC = () => {
             <div>
                 <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Scissors className="w-4 h-4 text-blue-600" /><span>Réduction Chirurgicale du Volume Pulmonaire (RCVP / LVRS)</span></h5>
                 <p className="text-sm ml-6 mb-1"><strong>Principe:</strong> Résection des zones d'emphysème les plus sévères.</p>
-                <p className="text-sm ml-6"><strong>Indications principales:</strong> Emphysème prédominant aux lobes supérieurs, faible capacité d'exercice post-réhabilitation, VEMS {"<"} 45% prédit, DLCO {"<"} 45% prédit, arrêt du tabac.</p>
+                <p className="text-sm ml-6"><strong>Indications principales:</strong> Emphysème prédominant aux lobes supérieurs, faible capacité d'exercice post-réhabilitation, VEMS &lt; 45% prédit, DLCO &lt; 45% prédit, arrêt du tabac.</p>
             </div>
 
             <div>
@@ -929,7 +929,7 @@ export const COPDDecisionSupport: React.FC = () => {
             <div>
                 <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Recycle className="w-4 h-4 text-blue-600" /><span>Transplantation Pulmonaire</span></h5>
                 <p className="text-sm ml-6 mb-1">Pour BPCO très sévère, en phase terminale, réfractaire.</p>
-                <p className="text-sm ml-6"><strong>Critères de référencement (exemples):</strong> Index BODE ≥ 7-10, VEMS {"<"} 20% prédit, hospitalisations pour hypercapnie, hypertension pulmonaire sévère.</p>
+                <p className="text-sm ml-6"><strong>Critères de référencement (exemples):</strong> Index BODE ≥ 7-10, VEMS &lt; 20% prédit, hospitalisations pour hypercapnie, hypertension pulmonaire sévère.</p>
             </div>
              <p className="mt-3 text-sm text-gray-500 italic">Ces traitements nécessitent une évaluation spécialisée et ne sont pas adaptés à tous les patients.</p>
           </div>
@@ -946,28 +946,15 @@ export const COPDDecisionSupport: React.FC = () => {
     onClose: () => void;
   }
 
-  const PrintReport = React.memo(({ patientData, calculateCATScore, goldGroup, onClose }: PrintReportProps) => {
-    const [isPrinting, setIsPrinting] = useState(false);
+const PrintReport = React.memo(({ patientData, calculateCATScore, goldGroup, onClose }: PrintReportProps) => {
     const currentDate = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
     
-    useEffect(() => {
-      const handleBeforePrint = () => setIsPrinting(true);
-      const handleAfterPrint = () => setIsPrinting(false);
-      window.addEventListener('beforeprint', handleBeforePrint);
-      window.addEventListener('afterprint', handleAfterPrint);
-      console.log("PrintReport: Event listeners for print attached."); // Debug log
-      return () => {
-        window.removeEventListener('beforeprint', handleBeforePrint);
-        window.removeEventListener('afterprint', handleAfterPrint);
-        console.log("PrintReport: Event listeners for print removed."); // Debug log
-      };
-    }, []); // Empty dependency array: runs once on mount, cleans up on unmount
-
-    const triggerPrint = useCallback(() => {
-      console.log("PrintReport: triggerPrint called. isPrinting:", isPrinting); // Debug log
-      if (isPrinting) return;
-      window.print();
-    }, [isPrinting]); // Dependency on isPrinting is correct here for the guard
+    const handlePrint = useCallback(() => {
+      // Créer un délai pour s'assurer que le DOM est prêt et éviter double impression
+      setTimeout(() => {
+        window.print();
+      }, 250); // Un court délai peut aider, 250ms est un point de départ
+    }, []);
 
     const getGoldGradeText = useMemo(() => {
       if (!patientData.fev1Predicted || isNaN(parseInt(patientData.fev1Predicted))) return 'Non renseigné';
@@ -979,7 +966,7 @@ export const COPDDecisionSupport: React.FC = () => {
     }, [patientData.fev1Predicted]);
 
     const bloodEos = patientData.bloodEosinophils ? parseInt(patientData.bloodEosinophils) : null;
-    const treatmentRec = useMemo(() => { // Re-calculate for print, matching TreatmentStep
+    const treatmentRec = useMemo(() => {
         switch(goldGroup) {
             case 'A': return 'Un bronchodilatateur (BDCA au besoin, ou LABA ou LAMA en traitement de fond si symptômes plus persistants).';
             case 'B': return `Association LABA + LAMA. ${bloodEos !== null && bloodEos >= 300 ? "Considérer CSI si symptômes importants malgré LABA+LAMA." : ""}`;
@@ -991,14 +978,13 @@ export const COPDDecisionSupport: React.FC = () => {
         }
     }, [goldGroup, bloodEos]);
 
-
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="report-title">
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 print:bg-transparent" role="dialog" aria-modal="true" aria-labelledby="report-title">
         <div 
           id="printable-report-modal-content-box" 
-          className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg shadow-2xl"
+          className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg shadow-2xl print:shadow-none print:max-w-none print:max-h-none print:h-auto"
         >
-          <div className="overflow-y-auto p-6 sm:p-8" id="printable-report">
+          <div className="overflow-y-auto p-6 sm:p-8 print:overflow-visible" id="printable-report">
             <div className="text-center mb-8 border-b-2 border-gray-300 pb-4">
               <h1 id="report-title" className="text-3xl font-bold text-gray-900">RAPPORT D'ÉVALUATION BPCO</h1>
               <p className="text-gray-600">Selon les recommandations GOLD 2025</p>
@@ -1086,9 +1072,8 @@ export const COPDDecisionSupport: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={triggerPrint}
-              disabled={isPrinting}
-              className={`px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors ${isPrinting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={handlePrint}
+              className="px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors"
             >
               <Printer className="w-4 h-4" aria-hidden="true" />
               <span>Imprimer</span>
@@ -1098,7 +1083,7 @@ export const COPDDecisionSupport: React.FC = () => {
       </div>
     );
   });
-  PrintReport.displayName = 'PrintReport';
+PrintReport.displayName = 'PrintReport';
 
   const ExacerbationStep = React.memo((props: StepComponentCommonProps) => {
     const { expandedSections, onToggleSection } = props;
@@ -1201,7 +1186,7 @@ export const COPDDecisionSupport: React.FC = () => {
                 <ExternalExpandableSection title="Indications d'Hospitalisation" icon={Hospital as IconComponent} sectionKey="exacHospital" isExpanded={!!expandedSections["exacHospital"]} onToggle={() => onToggleSection("exacHospital")}>
                     <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
                     <li>Symptômes sévères: aggravation soudaine de la dyspnée au repos, fréquence respiratoire élevée, SpO2 basse, confusion, somnolence.</li>
-                    <li>Insuffisance respiratoire aiguë (PaO2 {"<"} 60 mmHg et/ou SaO2 {"<"} 90% avec ou sans PaCO2 {'>'} 50 mmHg).</li>
+                    <li>Insuffisance respiratoire aiguë (PaO2 &lt; 60 mmHg et/ou SaO2 &lt; 90% avec ou sans PaCO2 &gt; 50 mmHg).</li>
                     <li>Apparition de nouveaux signes physiques (ex: cyanose, œdèmes périphériques).</li>
                     <li>Échec de la réponse au traitement initial de l'exacerbation.</li>
                     <li>Comorbidités sévères (ex: insuffisance cardiaque, arythmies cardiaques nouvelles).</li>
