@@ -1,7 +1,10 @@
 
 import React, { useState, useCallback, useMemo, useTransition, useDeferredValue, useEffect } from 'react';
 import { PatientData, ValidationErrors, CATQuestion, StepDefinition as StepDefinitionType, TreatmentRecommendation, CATScoreFields } from './types'; // Renamed StepDefinition to StepDefinitionType to avoid conflict
-import { ChevronRight, ChevronDown, AlertTriangle, CheckCircle, Info, Calculator, FileText, Activity, Users, Settings, Printer, User, LucideProps, X } from 'lucide-react';
+import { 
+    ChevronRight, ChevronDown, AlertTriangle, CheckCircle, Info, Calculator, FileText, Activity, Users, Settings, Printer, User, LucideProps, X, Hospital, Stethoscope, Pill, AirVent, AlertOctagon, Repeat, Home, HelpCircle, GitFork,
+    CalendarClock, ClipboardList, Baseline, Bike, HeartPulse, FilePenLine, HandHeart, Scissors, Layers, Slice, Recycle
+} from 'lucide-react';
 
 // Helper to type Lucide icons more strictly if needed, otherwise React.ElementType is fine
 type IconComponent = React.FC<LucideProps>;
@@ -64,13 +67,13 @@ const PatientInfoStep: React.FC<PatientInfoStepProps> = React.memo(({
   return (
     <div className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Informations du patient</h3>
-        <p className="text-blue-700 text-sm">Saisissez les informations de base du patient pour commencer l'évaluation.</p>
+        <h3 className="text-xl font-semibold text-blue-800 mb-2">Informations du patient</h3>
+        <p className="text-blue-700 text-base">Saisissez les informations de base du patient pour commencer l'évaluation.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">Nom et prénom du patient *</label>
+          <label htmlFor="patientName" className="block text-base font-medium text-gray-700 mb-1">Nom et prénom du patient *</label>
           <input
             id="patientName"
             type="text"
@@ -83,12 +86,12 @@ const PatientInfoStep: React.FC<PatientInfoStepProps> = React.memo(({
             autoComplete="name"
           />
           {validationErrors.patientName && (
-            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientName}</p>
+            <p className="text-red-600 text-sm mt-1" role="alert">{validationErrors.patientName}</p>
           )}
         </div>
         
         <div>
-          <label htmlFor="patientAge" className="block text-sm font-medium text-gray-700 mb-1">Âge *</label>
+          <label htmlFor="patientAge" className="block text-base font-medium text-gray-700 mb-1">Âge *</label>
           <input
             id="patientAge"
             type="number"
@@ -103,7 +106,7 @@ const PatientInfoStep: React.FC<PatientInfoStepProps> = React.memo(({
             autoComplete="age"
           />
           {validationErrors.patientAge && (
-            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientAge}</p>
+            <p className="text-red-600 text-sm mt-1" role="alert">{validationErrors.patientAge}</p>
           )}
         </div>
       </div>
@@ -113,7 +116,7 @@ const PatientInfoStep: React.FC<PatientInfoStepProps> = React.memo(({
           <CheckCircle className="w-5 h-5 text-green-600" aria-hidden="true" />
           <span className="font-semibold text-green-800">Prêt à commencer</span>
         </div>
-        <p className="text-green-700 text-sm">
+        <p className="text-green-700 text-base">
           Une fois les informations saisies, vous pourrez procéder à l'évaluation diagnostique selon les critères GOLD 2025.
         </p>
       </div>
@@ -202,21 +205,21 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 id="cat-modal-title" className="text-lg font-semibold text-gray-800">Test d'évaluation de la BPCO (CAT)</h2>
+          <h2 id="cat-modal-title" className="text-xl font-semibold text-gray-800">Test d'évaluation de la BPCO (CAT)</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600" aria-label="Fermer">
             <X size={24} />
           </button>
         </div>
         <div className="p-6 space-y-6 overflow-y-auto">
           <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-            <p className="text-blue-700 text-sm">
+            <p className="text-blue-700 text-base">
               Pour chaque item, cochez la case qui décrit le mieux votre état actuel (0 = pas du tout, 5 = extrêmement).
             </p>
           </div>
           {catQuestions.map((q, index) => (
             <div key={q.field} className="border border-gray-200 rounded-lg p-4">
               <h5 className="font-medium text-gray-700 mb-2">Question {index + 1}: {q.description}</h5>
-              <div className="mb-3 text-xs text-gray-500">
+              <div className="mb-3 text-sm text-gray-500">
                 <div className="flex justify-between">
                   <span>0: {q.question}</span>
                   <span>5: {q.opposite}</span>
@@ -234,7 +237,7 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
                       onChange={(e) => handleScoreChange(q.field as keyof CATScoreFields, e.target.value)}
                       className="h-4 w-4 rounded-full border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-sm font-medium text-gray-700">{score}</span>
+                    <span className="text-base font-medium text-gray-700">{score}</span>
                   </label>
                 ))}
               </fieldset>
@@ -245,14 +248,14 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Annuler
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Valider et Fermer
           </button>
@@ -274,7 +277,7 @@ interface StepComponentCommonProps {
 }
 
 
-const COPDDecisionSupport: React.FC = () => {
+export const COPDDecisionSupport: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<string>('patient-info');
   const [showPrintReport, setShowPrintReport] = useState<boolean>(false);
   
@@ -368,16 +371,13 @@ const COPDDecisionSupport: React.FC = () => {
   }, [startTransition]); // setExpandedSections is stable
 
 
-  // These components will be moved outside or defined via useMemo with stable props if they depend on parent scope
-  // For now, DiagnosticStep and others remain inside to focus the fix on PatientInfoStep + ExpandableSection
-
   const DiagnosticStep = React.memo((props: StepComponentCommonProps) => {
     const { patientData, handleFieldChange, validationErrors, expandedSections, onToggleSection } = props;
     return (
     <div className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Indicateurs cliniques pour considérer un diagnostic de BPCO</h3>
-        <p className="text-blue-700 text-sm">Cochez les éléments présents chez votre patient :</p>
+        <h3 className="text-xl font-semibold text-blue-800 mb-2">Indicateurs cliniques pour considérer un diagnostic de BPCO</h3>
+        <p className="text-blue-700 text-base">Cochez les éléments présents chez votre patient :</p>
       </div>
 
       <ExternalExpandableSection 
@@ -402,7 +402,7 @@ const COPDDecisionSupport: React.FC = () => {
                 onChange={(e) => handleFieldChange(field as keyof PatientData, e.target.checked)}
                 className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{label}</span>
+              <span className="text-base text-gray-700">{label}</span>
             </label>
           ))}
         </div>
@@ -430,7 +430,7 @@ const COPDDecisionSupport: React.FC = () => {
                 onChange={(e) => handleFieldChange(field as keyof PatientData, e.target.checked)}
                 className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{label}</span>
+              <span className="text-base text-gray-700">{label}</span>
             </label>
           ))}
         </div>
@@ -448,14 +448,14 @@ const COPDDecisionSupport: React.FC = () => {
             <Info className="w-5 h-5 text-yellow-600" aria-hidden="true" />
             <span className="font-semibold text-yellow-800">Important</span>
           </div>
-          <p className="text-yellow-700 text-sm">
+          <p className="text-yellow-700 text-base">
             Une spirométrie post-bronchodilatateur montrant un rapport VEMS/CVF {"<"} 0,7 est nécessaire pour confirmer le diagnostic de BPCO.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="pre-fev1-fvc" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="pre-fev1-fvc" className="block text-base font-medium text-gray-700 mb-1">
               VEMS/CVF pré-bronchodilatateur
             </label>
             <input
@@ -472,7 +472,7 @@ const COPDDecisionSupport: React.FC = () => {
           </div>
           
           <div>
-            <label htmlFor="post-fev1-fvc" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="post-fev1-fvc" className="block text-base font-medium text-gray-700 mb-1">
               VEMS/CVF post-bronchodilatateur *
             </label>
             <input
@@ -491,7 +491,7 @@ const COPDDecisionSupport: React.FC = () => {
               aria-describedby={validationErrors.postBronchodilatorFEV1FVC ? 'post-fev1-error' : undefined}
             />
             {validationErrors.postBronchodilatorFEV1FVC && (
-              <p id="post-fev1-error" className="text-red-600 text-xs mt-1" role="alert">
+              <p id="post-fev1-error" className="text-red-600 text-sm mt-1" role="alert">
                 {validationErrors.postBronchodilatorFEV1FVC}
               </p>
             )}
@@ -499,7 +499,7 @@ const COPDDecisionSupport: React.FC = () => {
         </div>
         
         {patientData.postBronchodilatorFEV1FVC && !isNaN(parseFloat(patientData.postBronchodilatorFEV1FVC)) && (
-          <div className={`mt-4 p-3 rounded-lg transition-colors text-sm ${
+          <div className={`mt-4 p-3 rounded-lg transition-colors text-base ${
             parseFloat(patientData.postBronchodilatorFEV1FVC) < 0.7 
               ? 'bg-green-50 border border-green-200 text-green-700' 
               : 'bg-red-50 border border-red-200 text-red-700'
@@ -529,7 +529,6 @@ const COPDDecisionSupport: React.FC = () => {
     return highSymptoms ? 'B' : 'A';
   }, [deferredPatientData, calculateCATScore]);
 
-  // AssessmentStep specific props
   interface AssessmentStepProps extends StepComponentCommonProps {
     isCATModalOpen: boolean;
     onOpenCATModal: () => void;
@@ -537,7 +536,7 @@ const COPDDecisionSupport: React.FC = () => {
     onSubmitCATScores: (scores: CATScoreFields) => void;
     currentCATDataForModal: CATScoreFields;
     catQuestions: CATQuestion[];
-    calculateCATScore: number | null; // Already in common, but emphasize
+    calculateCATScore: number | null; 
   }
 
 
@@ -551,8 +550,8 @@ const COPDDecisionSupport: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <h3 className="text-lg font-semibold text-green-800 mb-2">Évaluation initiale selon GOLD 2025</h3>
-          <p className="text-green-700 text-sm">Évaluez la sévérité de l'obstruction, l'impact des symptômes et le risque d'exacerbations.</p>
+          <h3 className="text-xl font-semibold text-green-800 mb-2">Évaluation initiale selon GOLD 2025</h3>
+          <p className="text-green-700 text-base">Évaluez la sévérité de l'obstruction, l'impact des symptômes et le risque d'exacerbations.</p>
         </div>
 
         <ExternalExpandableSection 
@@ -563,7 +562,7 @@ const COPDDecisionSupport: React.FC = () => {
             onToggle={() => onToggleSection("goldGrade")}
         >
           <div className="mb-4">
-            <label htmlFor="fev1-predicted" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="fev1-predicted" className="block text-base font-medium text-gray-700 mb-1">
               VEMS (% de la valeur prédite) post-bronchodilatateur *
             </label>
             <input
@@ -581,7 +580,7 @@ const COPDDecisionSupport: React.FC = () => {
               aria-describedby={validationErrors.fev1Predicted ? 'fev1-error' : undefined}
             />
             {validationErrors.fev1Predicted && (
-              <p id="fev1-error" className="text-red-600 text-xs mt-1" role="alert">{validationErrors.fev1Predicted}</p>
+              <p id="fev1-error" className="text-red-600 text-sm mt-1" role="alert">{validationErrors.fev1Predicted}</p>
             )}
           </div>
           
@@ -589,7 +588,7 @@ const COPDDecisionSupport: React.FC = () => {
             <div className="space-y-2">
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-200" role="status" aria-live="polite">
                 <span className="font-semibold text-gray-700">Classification GOLD : </span>
-                <span className={`px-2 py-1 rounded text-xs font-medium text-white transition-colors ${
+                <span className={`px-2 py-1 rounded text-sm font-medium text-white transition-colors ${
                   parseInt(patientData.fev1Predicted) >= 80 ? 'bg-green-500' :
                   parseInt(patientData.fev1Predicted) >= 50 ? 'bg-yellow-500' :
                   parseInt(patientData.fev1Predicted) >= 30 ? 'bg-orange-500' : 'bg-red-500'
@@ -631,12 +630,12 @@ const COPDDecisionSupport: React.FC = () => {
                       onChange={(e) => handleFieldChange('mmrcScore', e.target.value)}
                       className="mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{option.value}: {option.label}</span>
+                    <span className="text-base text-gray-700">{option.value}: {option.label}</span>
                   </label>
                 ))}
               </fieldset>
               {validationErrors.mmrcScore && (
-                <p className="text-red-600 text-xs mt-2" role="alert">{validationErrors.mmrcScore}</p>
+                <p className="text-red-600 text-sm mt-2" role="alert">{validationErrors.mmrcScore}</p>
               )}
             </div>
             
@@ -644,7 +643,7 @@ const COPDDecisionSupport: React.FC = () => {
               <h4 className="font-semibold text-gray-700 mb-1">Test d'évaluation de la BPCO (CAT) *</h4>
                <button
                 onClick={onOpenCATModal}
-                className="mb-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="mb-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Saisir / Modifier Score CAT
               </button>
@@ -652,7 +651,7 @@ const COPDDecisionSupport: React.FC = () => {
               <div className="mt-1 p-4 bg-gray-50 rounded-lg border border-gray-200" role="status" aria-live="polite">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-gray-700">Score CAT total:</span>
-                  <span className={`text-xl font-bold transition-colors ${
+                  <span className={`text-2xl font-bold transition-colors ${
                     calculateCATScore !== null 
                       ? calculateCATScore < 10 ? 'text-green-600' : 'text-orange-600'
                       : 'text-gray-400'
@@ -661,8 +660,8 @@ const COPDDecisionSupport: React.FC = () => {
                   </span>
                 </div>
                 {calculateCATScore !== null && (
-                  <div className="mt-2 text-sm">
-                    <span className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  <div className="mt-2 text-base">
+                    <span className={`px-2 py-1 rounded text-sm font-medium transition-colors ${ /* badge size kept as text-sm */
                       calculateCATScore < 10 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
                     }`}>
                       {calculateCATScore < 10 ? 'Impact faible' : 'Impact élevé'}
@@ -670,7 +669,7 @@ const COPDDecisionSupport: React.FC = () => {
                   </div>
                 )}
                  {validationErrors.catScore && (
-                  <p className="text-red-600 text-xs mt-2" role="alert">{validationErrors.catScore}</p>
+                  <p className="text-red-600 text-sm mt-2" role="alert">{validationErrors.catScore}</p>
                 )}
               </div>
             </div>
@@ -686,7 +685,7 @@ const COPDDecisionSupport: React.FC = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="exacerbations" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="exacerbations" className="block text-base font-medium text-gray-700 mb-1">
                 Exacerbations modérées/sévères (dernière année)
               </label>
               <input
@@ -701,7 +700,7 @@ const COPDDecisionSupport: React.FC = () => {
             </div>
             
             <div>
-              <label htmlFor="hospitalizations" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="hospitalizations" className="block text-base font-medium text-gray-700 mb-1">
                 Hospitalisations pour BPCO (dernière année)
               </label>
               <input
@@ -717,7 +716,7 @@ const COPDDecisionSupport: React.FC = () => {
           </div>
           
           <div className="mt-4">
-            <label htmlFor="eosinophils" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="eosinophils" className="block text-base font-medium text-gray-700 mb-1">
               Éosinophiles sanguins (cellules/μL)
             </label>
             <input
@@ -731,7 +730,7 @@ const COPDDecisionSupport: React.FC = () => {
             />
           </div>
         </ExternalExpandableSection>
-         {isCATModalOpen && ( // This modal rendering should be at COPDDecisionSupport level or passed controls
+         {isCATModalOpen && ( 
             <CATScoreModal
                 isOpen={isCATModalOpen}
                 onClose={onCloseCATModal}
@@ -752,6 +751,7 @@ const COPDDecisionSupport: React.FC = () => {
 
   const TreatmentStep = React.memo((props: TreatmentStepProps) => {
     const { patientData, expandedSections, onToggleSection, goldGroup, calculateCATScore } = props;
+    const bloodEos = patientData.bloodEosinophils ? parseInt(patientData.bloodEosinophils) : null;
 
     const getInitialTreatment = useMemo((): TreatmentRecommendation => {
       switch(goldGroup) {
@@ -765,32 +765,41 @@ const COPDDecisionSupport: React.FC = () => {
           return {
             primary: 'Association LABA + LAMA',
             options: ['Formotérol/Glycopyrronium', 'Indacatérol/Glycopyrronium', 'Vilanterol/Umeclidinium', 'Formotérol/Aclidinium', 'Tiotropium/Olodatérol'],
-            note: 'Une combinaison en un seul inhalateur est généralement préférée pour améliorer l\'observance.'
+            note: 'Une combinaison en un seul inhalateur est généralement préférée pour améliorer l\'observance. Si éosinophiles sanguins ≥ 300 cellules/µL, l\'ajout d\'un CSI peut être discuté en cas de symptômes persistants importants malgré LABA+LAMA, bien que ce groupe soit défini par un faible risque d\'exacerbations.'
           };
         case 'E':
-          return {
-            primary: 'Association LABA + LAMA. Considérer LABA + LAMA + CSI si éosinophiles ≥ 300 cellules/µL.',
-            options: [
-              'Si éosinophiles ≥ 300 cellules/µL: LABA + LAMA + CSI (ex: Formotérol/Glycopyrronium/Budésonide, Vilanterol/Umeclidinium/Fluticasone furoate)',
-              'Si éosinophiles < 300 cellules/µL: LABA + LAMA. Si exacerbations persistent, discuter CSI au cas par cas (surtout si éosinophiles 100-300 et historique d\'exacerbations malgré LABA+LAMA).',
-              'Autres options si exacerbations persistantes malgré LABA+LAMA+CSI ou contre-indication aux CSI : Roflumilast (si VEMS < 50% et bronchite chronique), Azithromycine (chez anciens fumeurs).'
-            ],
-            note: 'Une surveillance étroite des exacerbations et des effets secondaires des CSI est nécessaire.'
-          };
+          if (bloodEos !== null && bloodEos >= 300) {
+            return {
+              primary: 'Association LABA + LAMA + CSI',
+              options: ['Formotérol/Glycopyrronium/Budésonide', 'Vilanterol/Umeclidinium/Fluticasone furoate', 'Salmétérol/Fluticasone propionate + Tiotropium'],
+              note: `Éosinophiles (${bloodEos} cellules/µL) ≥ 300: Fort support pour l'inclusion des CSI d'emblée avec LABA et LAMA pour réduire les exacerbations.`
+            };
+          } else if (bloodEos !== null && bloodEos >= 100) {
+             return {
+              primary: 'Association LABA + LAMA. Discuter l\'ajout de CSI.',
+              options: ['LABA + LAMA initialement. Si exacerbations persistent : ajouter CSI (LABA+LAMA+CSI).', 'Exemples de LABA+LAMA : Formotérol/Glycopyrronium, Indacatérol/Glycopyrronium, etc.'],
+              note: `Éosinophiles (${bloodEos} cellules/µL) entre 100 et 299: L'ajout de CSI à LABA+LAMA est à considérer, surtout si exacerbations fréquentes/sévères malgré LABA+LAMA. L'initiation par LABA+LAMA reste une option valide.`
+            };
+          } else { // Eos < 100 or unknown
+             return {
+              primary: 'Association LABA + LAMA.',
+              options: ['Formotérol/Glycopyrronium', 'Indacatérol/Glycopyrronium', 'Vilanterol/Umeclidinium'],
+              note: `Éosinophiles ${bloodEos !== null ? `(${bloodEos} cellules/µL) < 100` : 'non renseignés ou < 100'}: Moindre support pour les CSI. Envisager Roflumilast (si VEMS < 50% et bronchite chronique) ou Azithromycine (chez anciens fumeurs) si exacerbations persistent sous LABA+LAMA.`
+            };
+          }
         default:
           return { primary: 'Évaluation incomplète pour déterminer le groupe GOLD.', options: [], note: 'Veuillez compléter les étapes précédentes.' };
       }
-    }, [goldGroup]);
+    }, [goldGroup, bloodEos]);
 
     const postBronchoFEV1FVC = parseFloat(patientData.postBronchodilatorFEV1FVC);
-    const bloodEos = patientData.bloodEosinophils ? parseInt(patientData.bloodEosinophils) : null;
 
     return (
       <div className="space-y-6">
         <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-          <h3 className="text-lg font-semibold text-purple-800 mb-2">Recommandations thérapeutiques GOLD 2025</h3>
-          <p className="text-purple-700 text-sm">
-            Basé sur l'évaluation : Groupe <span className="font-bold">{goldGroup}</span> | mMRC: {patientData.mmrcScore || 'N/A'} | CAT: {calculateCATScore !== null ? calculateCATScore : 'N/A'}
+          <h3 className="text-xl font-semibold text-purple-800 mb-2">Recommandations thérapeutiques GOLD 2025</h3>
+          <p className="text-purple-700 text-base">
+            Basé sur l'évaluation : Groupe <span className="font-bold">{goldGroup}</span> | mMRC: {patientData.mmrcScore || 'N/A'} | CAT: {calculateCATScore !== null ? calculateCATScore : 'N/A'} | Éosinophiles: {patientData.bloodEosinophils || 'N/R'}
           </p>
         </div>
 
@@ -799,7 +808,7 @@ const COPDDecisionSupport: React.FC = () => {
             <AlertTriangle className="w-5 h-5 text-yellow-600" />
             <span>Points d'attention / Contrôles de cohérence :</span>
           </h4>
-          <div className="space-y-1 text-sm text-yellow-700">
+          <div className="space-y-1 text-base text-yellow-700">
             {!isNaN(postBronchoFEV1FVC) && postBronchoFEV1FVC >= 0.7 && (
               <p className="flex items-start space-x-2"><Info className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" /><span>VEMS/CVF post-BD ≥ 0.7 : le diagnostic de BPCO n'est pas confirmé par spirométrie. Reconsidérer le diagnostic.</span></p>
             )}
@@ -812,12 +821,15 @@ const COPDDecisionSupport: React.FC = () => {
             {calculateCATScore !== null && patientData.mmrcScore && parseInt(patientData.mmrcScore) < 2 && calculateCATScore >= 10 && (
               <p className="flex items-start space-x-2"><Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" /><span>Discordance possible entre mMRC ({'<'}2, peu symptomatique) et CAT (≥10, symptomatique). Privilégier l'évaluation clinique globale.</span></p>
             )}
+             {goldGroup === 'E' && bloodEos === null && (
+                <p className="flex items-start space-x-2"><Info className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" /><span>Le taux d'éosinophiles sanguins est important pour guider l'utilisation des CSI chez les patients du groupe E. Si disponible, veuillez le renseigner.</span></p>
+            )}
           </div>
         </div>
 
         <ExternalExpandableSection 
             title="Traitement pharmacologique initial" 
-            icon={Settings as IconComponent} 
+            icon={Pill as IconComponent} 
             sectionKey="pharmacological"
             isExpanded={!!expandedSections["pharmacological"]}
             onToggle={() => onToggleSection("pharmacological")}
@@ -827,35 +839,21 @@ const COPDDecisionSupport: React.FC = () => {
               <h4 className="font-semibold text-blue-800 mb-2">Groupe {goldGroup} - Traitement recommandé :</h4>
               <p className="text-blue-700 font-medium">{getInitialTreatment.primary}</p>
               {getInitialTreatment.note && (
-                <p className="text-blue-600 text-xs mt-2">{getInitialTreatment.note}</p>
+                <p className="text-blue-600 text-sm mt-2 italic">{getInitialTreatment.note}</p>
               )}
             </div>
             
             {getInitialTreatment.options.length > 0 && (
               <div>
-                <h5 className="font-semibold text-gray-700 mb-2">Options thérapeutiques (exemples) :</h5>
+                <h5 className="font-semibold text-gray-700 mb-2">Options thérapeutiques (exemples non exhaustifs) :</h5>
                 <ul className="space-y-1">
                   {getInitialTreatment.options.map((option, index) => (
                     <li key={index} className="flex items-start space-x-2 p-1">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-                      <span className="text-sm text-gray-700">{option}</span>
+                      <span className="text-base text-gray-700">{option}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-
-            {bloodEos !== null && !isNaN(bloodEos) && (
-              <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <h5 className="font-semibold text-yellow-800 mb-1">Considération des éosinophiles :</h5>
-                <p className="text-yellow-700 text-sm">
-                  Éosinophiles : {bloodEos} cellules/μL - 
-                  {bloodEos >= 300 
-                    ? ' Fort support pour l\'ajout de CSI si exacerbations ou symptômes persistants.'
-                    : bloodEos >= 100
-                    ? ' Support conditionnel pour CSI, à discuter en fonction du phénotype et du risque d\'exacerbation.'
-                    : ' Peu de support pour CSI en initiation, sauf si asthme concomitant.'}
-                </p>
               </div>
             )}
           </div>
@@ -872,7 +870,7 @@ const COPDDecisionSupport: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border border-gray-200 rounded-lg bg-white">
                 <h5 className="font-semibold text-gray-700 mb-2">Essentiel pour tous les patients</h5>
-                <ul className="space-y-1 text-sm text-gray-600 list-disc list-inside">
+                <ul className="space-y-1 text-base text-gray-600 list-disc list-inside">
                   <li>Arrêt du tabac (conseil et aide au sevrage).</li>
                   <li>Activité physique régulière adaptée.</li>
                   <li>Vaccinations (grippe annuelle, pneumocoque, COVID-19, coqueluche).</li>
@@ -881,15 +879,56 @@ const COPDDecisionSupport: React.FC = () => {
               
               <div className="p-4 border border-gray-200 rounded-lg bg-white">
                 <h5 className="font-semibold text-gray-700 mb-2">Selon évaluation et sévérité</h5>
-                <ul className="space-y-1 text-sm text-gray-600 list-disc list-inside">
+                <ul className="space-y-1 text-base text-gray-600 list-disc list-inside">
                   <li>Réhabilitation respiratoire (pour patients symptomatiques et/ou post-exacerbation, groupes B et E notamment).</li>
                   <li>Éducation thérapeutique et autogestion (plan d'action personnalisé).</li>
                   <li>Support nutritionnel si nécessaire.</li>
-                  <li>Oxygénothérapie de longue durée (si hypoxémie sévère au repos).</li>
+                  <li>Oxygénothérapie de longue durée (si hypoxémie sévère au repos PaO2 ≤ 55 mmHg ou SaO2 ≤ 88%).</li>
                   <li>Ventilation non invasive (pour certains patients en hypercapnie chronique sévère).</li>
                 </ul>
               </div>
             </div>
+          </div>
+        </ExternalExpandableSection>
+
+        <ExternalExpandableSection 
+            title="Traitements Interventionnels et Chirurgie (pour cas sélectionnés)" 
+            icon={GitFork as IconComponent} 
+            sectionKey="interventionalTreatment"
+            isExpanded={!!expandedSections["interventionalTreatment"]}
+            onToggle={() => onToggleSection("interventionalTreatment")}
+        >
+          <div className="space-y-4 text-base text-gray-700">
+            <p>Pour certains patients avec BPCO avancée et réfractaire au traitement médical optimal, des options interventionnelles ou chirurgicales peuvent être envisagées après évaluation multidisciplinaire.</p>
+            
+            <div>
+                <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Scissors className="w-4 h-4 text-blue-600" /><span>Réduction Chirurgicale du Volume Pulmonaire (RCVP / LVRS)</span></h5>
+                <p className="text-sm ml-6 mb-1"><strong>Principe:</strong> Résection des zones d'emphysème les plus sévères.</p>
+                <p className="text-sm ml-6"><strong>Indications principales:</strong> Emphysème prédominant aux lobes supérieurs, faible capacité d'exercice post-réhabilitation, VEMS {"<"} 45% prédit, DLCO {"<"} 45% prédit, arrêt du tabac.</p>
+            </div>
+
+            <div>
+                <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Layers className="w-4 h-4 text-blue-600" /><span>Réduction Endoscopique du Volume Pulmonaire (REVP / ELVR)</span></h5>
+                <p className="text-sm ml-6 mb-1">Alternative moins invasive. Techniques incluent :</p>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-500 ml-10">
+                    <li><strong>Valves Endobronchiques (VEB):</strong> Atélectasie lobaire. Critère clé : absence de ventilation collatérale.</li>
+                    <li><strong>Spirales (Coils):</strong> Compression du parenchyme emphysémateux.</li>
+                    <li><strong>Thermoablation par Vapeur:</strong> Fibrose et réduction de volume.</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Slice className="w-4 h-4 text-blue-600" /><span>Bullectomie</span></h5>
+                <p className="text-sm ml-6 mb-1"><strong>Principe:</strong> Résection chirurgicale de bulles géantes.</p>
+                <p className="text-sm ml-6"><strong>Indications:</strong> Bulles compressives causant dyspnée, ou complications (pneumothorax, infection).</p>
+            </div>
+
+            <div>
+                <h5 className="font-semibold text-gray-600 mb-1 flex items-center space-x-2"><Recycle className="w-4 h-4 text-blue-600" /><span>Transplantation Pulmonaire</span></h5>
+                <p className="text-sm ml-6 mb-1">Pour BPCO très sévère, en phase terminale, réfractaire.</p>
+                <p className="text-sm ml-6"><strong>Critères de référencement (exemples):</strong> Index BODE ≥ 7-10, VEMS {"<"} 20% prédit, hospitalisations pour hypercapnie, hypertension pulmonaire sévère.</p>
+            </div>
+             <p className="mt-3 text-sm text-gray-500 italic">Ces traitements nécessitent une évaluation spécialisée et ne sont pas adaptés à tous les patients.</p>
           </div>
         </ExternalExpandableSection>
       </div>
@@ -909,31 +948,23 @@ const COPDDecisionSupport: React.FC = () => {
     const currentDate = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
     
     useEffect(() => {
-      const handleBeforePrint = () => {
-        setIsPrinting(true);
-      };
-      const handleAfterPrint = () => {
-        setIsPrinting(false);
-        // Optional: Automatically close the modal after printing/canceling
-        // onClose(); 
-      };
-  
+      const handleBeforePrint = () => setIsPrinting(true);
+      const handleAfterPrint = () => setIsPrinting(false);
       window.addEventListener('beforeprint', handleBeforePrint);
       window.addEventListener('afterprint', handleAfterPrint);
-  
+      console.log("PrintReport: Event listeners for print attached."); // Debug log
       return () => {
         window.removeEventListener('beforeprint', handleBeforePrint);
         window.removeEventListener('afterprint', handleAfterPrint);
+        console.log("PrintReport: Event listeners for print removed."); // Debug log
       };
-    }, [/* onClose if you decide to use it in handleAfterPrint */]);
+    }, []); // Empty dependency array: runs once on mount, cleans up on unmount
 
-    const triggerPrint = () => {
-      // The isPrinting state is primarily managed by browser events,
-      // but this check can prevent issues if the button is clicked rapidly
-      // before the 'beforeprint' event fires.
+    const triggerPrint = useCallback(() => {
+      console.log("PrintReport: triggerPrint called. isPrinting:", isPrinting); // Debug log
       if (isPrinting) return;
       window.print();
-    };
+    }, [isPrinting]); // Dependency on isPrinting is correct here for the guard
 
     const getGoldGradeText = useMemo(() => {
       if (!patientData.fev1Predicted || isNaN(parseInt(patientData.fev1Predicted))) return 'Non renseigné';
@@ -944,28 +975,44 @@ const COPDDecisionSupport: React.FC = () => {
       return 'GOLD 4 (Très sévère)';
     }, [patientData.fev1Predicted]);
 
+    const bloodEos = patientData.bloodEosinophils ? parseInt(patientData.bloodEosinophils) : null;
+    const treatmentRec = useMemo(() => { // Re-calculate for print, matching TreatmentStep
+        switch(goldGroup) {
+            case 'A': return 'Un bronchodilatateur (BDCA au besoin, ou LABA ou LAMA en traitement de fond si symptômes plus persistants).';
+            case 'B': return `Association LABA + LAMA. ${bloodEos !== null && bloodEos >= 300 ? "Considérer CSI si symptômes importants malgré LABA+LAMA." : ""}`;
+            case 'E':
+              if (bloodEos !== null && bloodEos >= 300) return `Association LABA + LAMA + CSI (Éosinophiles ${bloodEos} cellules/µL: Fort support).`;
+              if (bloodEos !== null && bloodEos >= 100) return `Association LABA + LAMA. Discuter CSI (Éosinophiles ${bloodEos} cellules/µL: Support conditionnel).`;
+              return `Association LABA + LAMA. (Éosinophiles ${bloodEos !== null ? bloodEos + ' cellules/µL: ' : ''}Moindre support pour CSI). Envisager autres options si exacerbations persistantes.`;
+            default: return 'Veuillez compléter l\'évaluation pour des recommandations spécifiques.';
+        }
+    }, [goldGroup, bloodEos]);
+
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="report-title">
-        <div className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg shadow-2xl">
-          {/* This div has overflow-y-auto for screen display. Print CSS overrides for #printable-report */}
+        <div 
+          id="printable-report-modal-content-box" 
+          className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg shadow-2xl"
+        >
           <div className="overflow-y-auto p-6 sm:p-8" id="printable-report">
             <div className="text-center mb-8 border-b-2 border-gray-300 pb-4">
-              <h1 id="report-title" className="text-2xl font-bold text-gray-900">RAPPORT D'ÉVALUATION BPCO</h1>
+              <h1 id="report-title" className="text-3xl font-bold text-gray-900">RAPPORT D'ÉVALUATION BPCO</h1>
               <p className="text-gray-600">Selon les recommandations GOLD 2025</p>
-              <p className="text-sm text-gray-500">Date de l'évaluation: {currentDate}</p>
+              <p className="text-base text-gray-500">Date de l'évaluation: {currentDate}</p>
             </div>
 
             <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Informations Patient</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Informations Patient</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-base">
                 <div><strong>Nom :</strong> {patientData.patientName || 'Non renseigné'}</div>
                 <div><strong>Âge :</strong> {patientData.patientAge || 'Non renseigné'} {patientData.patientAge ? 'ans' : ''}</div>
               </div>
             </section>
 
             <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Diagnostic Spirométrique</h2>
-              <div className="space-y-1 text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Diagnostic Spirométrique</h2>
+              <div className="space-y-1 text-base">
                 <div><strong>VEMS/CVF post-bronchodilatateur :</strong> {patientData.postBronchodilatorFEV1FVC || 'Non renseigné'}</div>
                  {patientData.postBronchodilatorFEV1FVC && !isNaN(parseFloat(patientData.postBronchodilatorFEV1FVC)) && (
                     <div className={`font-semibold ${parseFloat(patientData.postBronchodilatorFEV1FVC) < 0.7 ? 'text-green-700' : 'text-red-700'}`}>
@@ -979,8 +1026,8 @@ const COPDDecisionSupport: React.FC = () => {
             </section>
 
             <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Évaluation des Symptômes et Risque</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Évaluation des Symptômes et Risque</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-base">
                 <div><strong>Score mMRC :</strong> {patientData.mmrcScore || 'Non renseigné'}</div>
                 <div><strong>Score CAT :</strong> {calculateCATScore !== null ? `${calculateCATScore}/40` : 'Non calculé'}</div>
                 <div><strong>Impact symptomatique (CAT) :</strong> 
@@ -991,8 +1038,8 @@ const COPDDecisionSupport: React.FC = () => {
             </section>
 
             <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Historique d'Exacerbations & Éosinophiles</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Historique d'Exacerbations & Éosinophiles</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-base">
                 <div><strong>Exacerbations modérées/sévères (12 derniers mois) :</strong> {patientData.exacerbationsLastYear || '0'}</div>
                 <div><strong>Hospitalisations pour BPCO (12 derniers mois) :</strong> {patientData.hospitalizationsLastYear || '0'}</div>
                 <div><strong>Éosinophiles sanguins :</strong> {patientData.bloodEosinophils || 'Non renseigné'} {patientData.bloodEosinophils ? 'cellules/μL': ''}</div>
@@ -1000,22 +1047,17 @@ const COPDDecisionSupport: React.FC = () => {
             </section>
 
             <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Recommandations Thérapeutiques Initiales (Pharmacologiques)</h2>
-              <div className="space-y-3 text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Recommandations Thérapeutiques Initiales (Pharmacologiques)</h2>
+              <div className="space-y-3 text-base">
                 <div className="p-3 bg-purple-50 rounded border border-purple-200">
                   <strong>Groupe {goldGroup} - Approche recommandée :</strong>
-                  <div className="mt-1">
-                    {goldGroup === 'A' && 'Un bronchodilatateur (BDCA au besoin, ou LABA ou LAMA en traitement de fond si symptômes plus persistants).'}
-                    {goldGroup === 'B' && 'Association LABA + LAMA.'}
-                    {goldGroup === 'E' && `Association LABA + LAMA. ${patientData.bloodEosinophils && parseInt(patientData.bloodEosinophils) >= 300 ? 'Ajouter CSI (LABA+LAMA+CSI).' : 'Considérer CSI si éosinophiles ≥ 100 et exacerbations fréquentes/sévères.' }`}
-                    {goldGroup === 'Inconnu' && 'Veuillez compléter l\'évaluation pour des recommandations spécifiques.'}
-                  </div>
+                  <div className="mt-1">{treatmentRec}</div>
                 </div>
               </div>
             </section>
              <section className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Recommandations Thérapeutiques (Non-Pharmacologiques)</h2>
-              <div className="text-sm">
+              <h2 className="text-xl font-semibold mb-3 text-blue-800 border-b border-blue-200 pb-1">Recommandations Thérapeutiques (Non-Pharmacologiques)</h2>
+              <div className="text-base">
                   <ul className="list-disc list-inside mt-1 space-y-1">
                     <li>Arrêt du tabac (si applicable) : conseil systématique et aide au sevrage.</li>
                     <li>Activité physique : encourager une activité physique régulière et adaptée.</li>
@@ -1026,22 +1068,24 @@ const COPDDecisionSupport: React.FC = () => {
               </div>
             </section>
 
-            <div className="text-xs text-gray-500 mt-8 border-t border-gray-200 pt-4">
+            <div className="text-sm text-gray-500 mt-8 border-t border-gray-200 pt-4">
               <p>Ce rapport est un outil d'aide à la décision généré sur la base des informations fournies et des recommandations GOLD 2025. Il ne remplace pas le jugement clinique.</p>
             </div>
           </div>
 
           <div className="flex justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 print-hide">
             <button
+              type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               Fermer
             </button>
             <button
+              type="button"
               onClick={triggerPrint}
               disabled={isPrinting}
-              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors ${isPrinting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors ${isPrinting ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <Printer className="w-4 h-4" aria-hidden="true" />
               <span>Imprimer</span>
@@ -1053,59 +1097,255 @@ const COPDDecisionSupport: React.FC = () => {
   });
   PrintReport.displayName = 'PrintReport';
 
-  const ExacerbationStep = React.memo((props: StepComponentCommonProps) => ( // Assuming it uses common props for now
+  const ExacerbationStep = React.memo((props: StepComponentCommonProps) => {
+    const { expandedSections, onToggleSection } = props;
+    const [isExacerbationActive, setIsExacerbationActive] = useState<boolean | null>(null);
+
+    return (
     <div className="space-y-6">
-      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-        <h3 className="text-lg font-semibold text-red-800 mb-2">Gestion des exacerbations BPCO</h3>
-        <p className="text-red-700 text-sm">
-          Un événement aigu caractérisé par une aggravation des symptômes respiratoires du patient au-delà des variations quotidiennes habituelles, conduisant à un changement de traitement.
-        </p>
-      </div>
-      <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-        <h4 className="text-md font-semibold text-gray-700 mb-3">Principes de prise en charge :</h4>
-        <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-            <li>Augmentation des bronchodilatateurs à courte durée d'action (SABA ± SAMA).</li>
-            <li>Corticostéroïdes systémiques (ex: Prednisone 40mg/jour pour 5 jours).</li>
-            <li>Antibiothérapie si signes d'infection bactérienne (augmentation du volume et/ou de la purulence des expectorations, et/ou augmentation de la dyspnée).</li>
-            <li>Évaluer la nécessité d'une hospitalisation (sévérité des symptômes, comorbidités, support social).</li>
-            <li>Prévention des futures exacerbations (optimisation du traitement de fond, réhabilitation, plan d'action).</li>
-        </ul>
-        <p className="mt-4 text-xs text-gray-500">Ce module est en cours de développement pour une aide plus détaillée.</p>
-      </div>
+        <div className="bg-red-50 p-4 rounded-lg border border-red-200 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div>
+                <h3 className="text-xl font-semibold text-red-800 mb-2">Gestion des Exacerbations de BPCO</h3>
+                <p className="text-red-700 text-base">
+                    Une exacerbation de BPCO est un événement aigu caractérisé par une aggravation des symptômes respiratoires du patient au-delà des variations quotidiennes habituelles, conduisant à un changement de traitement.
+                </p>
+            </div>
+            {isExacerbationActive !== null && (
+                 <button 
+                    onClick={() => setIsExacerbationActive(null)} 
+                    className="mt-3 sm:mt-0 sm:ml-4 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-md hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Changer la réponse concernant l'exacerbation actuelle"
+                >
+                    Changer Réponse
+                </button>
+            )}
+        </div>
+
+        {isExacerbationActive === null && (
+            <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm text-center">
+                <h4 className="text-lg font-semibold text-gray-700 mb-4 flex items-center justify-center space-x-2">
+                    <HelpCircle className="w-6 h-6 text-blue-600" />
+                    <span>Le patient est-il actuellement en exacerbation de sa BPCO ?</span>
+                </h4>
+                <div className="flex justify-center space-x-4">
+                    <button 
+                        onClick={() => setIsExacerbationActive(true)}
+                        className="px-6 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                        Oui
+                    </button>
+                    <button 
+                        onClick={() => setIsExacerbationActive(false)}
+                        className="px-6 py-2 text-base font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Non
+                    </button>
+                </div>
+            </div>
+        )}
+
+        {isExacerbationActive === false && (
+            <ExternalExpandableSection 
+                title="Informations Générales sur les Exacerbations" 
+                icon={Info as IconComponent} 
+                sectionKey="exacGeneralInfo" 
+                isExpanded={true} // Default to expanded when 'Non' is chosen
+                onToggle={() => onToggleSection("exacGeneralInfo")} // Still allow toggle if preferred
+            >
+                <div className="space-y-3 text-base text-gray-700">
+                    <p><strong>Définition :</strong> Une exacerbation de BPCO est un événement aigu où les symptômes respiratoires (dyspnée, toux, expectorations) s'aggravent au-delà des variations habituelles et nécessitent un changement de traitement.</p>
+                    <p><strong>Importance de la Prévention :</strong> Les exacerbations fréquentes impactent négativement la qualité de vie, accélèrent le déclin de la fonction pulmonaire et augmentent le risque d'hospitalisation et de mortalité.</p>
+                    <p><strong>Reconnaissance Précoce :</strong> Il est crucial que les patients reconnaissent les premiers signes d'une exacerbation :</p>
+                    <ul className="list-disc list-inside ml-4">
+                        <li>Augmentation de l'essoufflement.</li>
+                        <li>Augmentation de la toux.</li>
+                        <li>Changement de la quantité ou de la couleur (plus jaune/vert) des expectorations.</li>
+                        <li>Fatigue inhabituelle, fièvre (moins fréquent).</li>
+                    </ul>
+                    <p><strong>Plan d'Action Personnalisé :</strong> Chaque patient devrait avoir un plan d'action écrit, convenu avec son médecin, qui détaille :</p>
+                    <ul className="list-disc list-inside ml-4">
+                        <li>Comment reconnaître une exacerbation.</li>
+                        <li>Quand et comment ajuster les médicaments (ex: augmenter les bronchodilatateurs à courte durée d'action).</li>
+                        <li>Quand commencer un traitement par corticostéroïdes oraux et/ou antibiotiques (si prescrits à l'avance).</li>
+                        <li>Quand contacter un professionnel de santé ou se rendre aux urgences.</li>
+                    </ul>
+                    <p><strong>Rappel :</strong> Même si le patient n'est pas en exacerbation actuellement, le maintien du traitement de fond, l'arrêt du tabac, la vaccination et l'activité physique sont essentiels pour prévenir les futures exacerbations.</p>
+                </div>
+            </ExternalExpandableSection>
+        )}
+
+        {isExacerbationActive === true && (
+            <>
+                <ExternalExpandableSection title="Objectifs du Traitement" icon={CheckCircle as IconComponent} sectionKey="exacGoals" isExpanded={!!expandedSections["exacGoals"]} onToggle={() => onToggleSection("exacGoals")}>
+                    <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
+                    <li>Minimiser l'impact négatif de l'exacerbation actuelle.</li>
+                    <li>Prévenir les événements futurs (nouvelles exacerbations).</li>
+                    </ul>
+                </ExternalExpandableSection>
+
+                <ExternalExpandableSection title="Évaluation Initiale et Classification de la Sévérité" icon={Stethoscope as IconComponent} sectionKey="exacAssessment" isExpanded={!!expandedSections["exacAssessment"]} onToggle={() => onToggleSection("exacAssessment")}>
+                    <p className="text-base text-gray-700 mb-2"><strong>Évaluer:</strong> Anamnèse, symptômes (dyspnée, toux, expectorations), signes vitaux, gazométrie artérielle si suspicion d'insuffisance respiratoire.</p>
+                    <p className="text-base text-gray-700 mb-2"><strong>Confondeurs à écarter:</strong> Pneumonie, insuffisance cardiaque, embolie pulmonaire, pneumothorax.</p>
+                    <p className="text-base text-gray-700 mb-2"><strong>Classification de la sévérité:</strong></p>
+                    <ul className="list-disc list-inside space-y-1 text-base text-gray-600 ml-4">
+                        <li><strong>Légère:</strong> Traitée uniquement avec des bronchodilatateurs à courte durée d'action (BDCA) augmentés.</li>
+                        <li><strong>Modérée:</strong> Traitée avec des BDCA plus des antibiotiques et/ou des corticostéroïdes oraux.</li>
+                        <li><strong>Sévère:</strong> Nécessite une hospitalisation ou une consultation aux urgences. Peut être associée à une insuffisance respiratoire aiguë.</li>
+                    </ul>
+                    <p className="mt-3 text-sm text-gray-500">Référence: GOLD 2025 Report, Figure 4.3 (adapté).</p>
+                </ExternalExpandableSection>
+
+                <ExternalExpandableSection title="Indications d'Hospitalisation" icon={Hospital as IconComponent} sectionKey="exacHospital" isExpanded={!!expandedSections["exacHospital"]} onToggle={() => onToggleSection("exacHospital")}>
+                    <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
+                    <li>Symptômes sévères: aggravation soudaine de la dyspnée au repos, fréquence respiratoire élevée, SpO2 basse, confusion, somnolence.</li>
+                    <li>Insuffisance respiratoire aiguë (PaO2 {"<"} 60 mmHg et/ou SaO2 {"<"} 90% avec ou sans PaCO2 > 50 mmHg).</li>
+                    <li>Apparition de nouveaux signes physiques (ex: cyanose, œdèmes périphériques).</li>
+                    <li>Échec de la réponse au traitement initial de l'exacerbation.</li>
+                    <li>Comorbidités sévères (ex: insuffisance cardiaque, arythmies cardiaques nouvelles).</li>
+                    <li>Support à domicile insuffisant.</li>
+                    </ul>
+                    <p className="mt-3 text-sm text-gray-500">Référence: GOLD 2025 Report, Figure 4.4.</p>
+                </ExternalExpandableSection>
+
+                <ExternalExpandableSection title="Traitement Pharmacologique de l'Exacerbation" icon={Pill as IconComponent} sectionKey="exacPharma" isExpanded={!!expandedSections["exacPharma"]} onToggle={() => onToggleSection("exacPharma")}>
+                    <div className="space-y-4">
+                    <div>
+                        <h5 className="font-semibold text-gray-700 text-base mb-1">Bronchodilatateurs:</h5>
+                        <p className="text-base text-gray-600">Augmenter la dose et/ou la fréquence des BDCA (SABA ± SAMA). Utiliser des nébuliseurs ou des chambres d'inhalation si besoin. Envisager des bronchodilatateurs à longue durée d'action dès que le patient est stable.</p>
+                    </div>
+                    <div>
+                        <h5 className="font-semibold text-gray-700 text-base mb-1">Corticostéroïdes Systémiques:</h5>
+                        <p className="text-base text-gray-600">Prednisone 40 mg/jour per os pendant 5 jours est recommandé pour les exacerbations modérées à sévères. Réduit le temps de récupération et améliore la fonction pulmonaire (VEMS) et l'hypoxémie.</p>
+                    </div>
+                    <div>
+                        <h5 className="font-semibold text-gray-700 text-base mb-1">Antibiotiques:</h5>
+                        <p className="text-base text-gray-600 mb-1">Indiqués si les 3 symptômes cardinaux d'Anthonisen sont présents (augmentation de la dyspnée, augmentation du volume des expectorations, ET augmentation de la purulence des expectorations) OU si 2 des 3 symptômes si l'un est l'augmentation de la purulence des expectorations.</p>
+                        <p className="text-base text-gray-600">Aussi indiqués pour les patients nécessitant une ventilation mécanique (invasive ou non invasive).</p>
+                        <p className="text-base text-gray-600">Durée recommandée: 5-7 jours.</p>
+                    </div>
+                    </div>
+                </ExternalExpandableSection>
+                
+                <ExternalExpandableSection title="Oxygénothérapie et Support Ventilatoire" icon={AirVent as IconComponent} sectionKey="exacOxygen" isExpanded={!!expandedSections["exacOxygen"]} onToggle={() => onToggleSection("exacOxygen")}>
+                    <div className="space-y-4">
+                        <div>
+                            <h5 className="font-semibold text-gray-700 text-base mb-1">Oxygénothérapie:</h5>
+                            <p className="text-base text-gray-600">Administrer pour atteindre une SpO2 cible de 88-92%. Surveiller le risque d'hypercapnie induite par l'oxygène.</p>
+                        </div>
+                        <div>
+                            <h5 className="font-semibold text-gray-700 text-base mb-1">Ventilation Non Invasive (VNI):</h5>
+                            <p className="text-base text-gray-600">Envisager si au moins un des critères suivants est présent: acidose respiratoire (pH ≤ 7.35 et/ou PaCO2 ≥ 45 mmHg), dyspnée sévère avec signes de fatigue des muscles respiratoires, hypoxémie persistante malgré oxygénothérapie.</p>
+                        </div>
+                        <div>
+                            <h5 className="font-semibold text-gray-700 text-base mb-1">Ventilation Mécanique Invasive (VMI):</h5>
+                            <p className="text-base text-gray-600">Indications: échec ou contre-indication à la VNI, arrêt respiratoire ou cardiaque, altération de la conscience, aspiration massive, instabilité hémodynamique sévère.</p>
+                        </div>
+                    </div>
+                </ExternalExpandableSection>
+
+                <ExternalExpandableSection title="Sortie d'Hôpital et Suivi" icon={Home as IconComponent} sectionKey="exacDischarge" isExpanded={!!expandedSections["exacDischarge"]} onToggle={() => onToggleSection("exacDischarge")}>
+                    <p className="text-base text-gray-700 mb-2"><strong>Critères de sortie (exemples):</strong></p>
+                    <ul className="list-disc list-inside space-y-1 text-base text-gray-600 ml-4">
+                        <li>Stabilité clinique (BDCA requis toutes les 4h ou moins).</li>
+                        <li>Capacité à utiliser les inhalateurs et comprendre le traitement.</li>
+                        <li>Stabilité des gaz du sang et de l'état mental.</li>
+                        <li>Support à domicile adéquat.</li>
+                    </ul>
+                    <p className="text-base text-gray-700 mt-3 mb-2"><strong>Suivi Post-Exacerbation:</strong></p>
+                    <ul className="list-disc list-inside space-y-1 text-base text-gray-600 ml-4">
+                        <li>Consultation de suivi dans les 1-4 semaines.</li>
+                        <li>Réévaluer les symptômes, la fonction pulmonaire (spirométrie si stable).</li>
+                        <li>Vérifier la technique d'inhalation et l'observance.</li>
+                        <li>Optimiser le traitement de fond pour prévenir de futures exacerbations.</li>
+                        <li>Considérer la réhabilitation respiratoire.</li>
+                        <li>Mettre à jour le plan d'action personnalisé.</li>
+                    </ul>
+                    <p className="mt-3 text-sm text-gray-500">Référence: GOLD 2025 Report, Figure 4.10.</p>
+                </ExternalExpandableSection>
+            </>
+        )}
     </div>
-  ));
+  )});
   ExacerbationStep.displayName = 'ExacerbationStep';
 
-  const FollowUpStep = React.memo((props: StepComponentCommonProps) => ( // Assuming it uses common props for now
+  const FollowUpStep = React.memo((props: StepComponentCommonProps) => {
+    const { expandedSections, onToggleSection } = props;
+    return (
     <div className="space-y-6">
       <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-        <h3 className="text-lg font-semibold text-indigo-800 mb-2">Suivi et gestion à long terme</h3>
-        <p className="text-indigo-700 text-sm">
+        <h3 className="text-xl font-semibold text-indigo-800 mb-2">Suivi et gestion à long terme</h3>
+        <p className="text-indigo-700 text-base">
           Une évaluation régulière est cruciale pour ajuster le traitement, surveiller la progression de la maladie et gérer les comorbidités.
         </p>
       </div>
-       <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-        <h4 className="text-md font-semibold text-gray-700 mb-3">Éléments clés du suivi :</h4>
-        <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-            <li>Réévaluation des symptômes (mMRC, CAT) et de l'historique d'exacerbations.</li>
-            <li>Vérification de la technique d'inhalation et de l'observance thérapeutique.</li>
-            <li>Spirométrie (au moins annuelle, plus si changement clinique).</li>
-            <li>Dépistage et prise en charge des comorbidités (cardiovasculaires, ostéoporose, anxiété/dépression, etc.).</li>
-            <li>Promotion de l'activité physique et du sevrage tabagique continu.</li>
-            <li>Mise à jour du plan d'action personnalisé.</li>
+
+      <ExternalExpandableSection title="Fréquence et Objectifs du Suivi" icon={CalendarClock as IconComponent} sectionKey="followupFreqObj" isExpanded={!!expandedSections["followupFreqObj"]} onToggle={() => onToggleSection("followupFreqObj")}>
+        <p className="text-base text-gray-700 mb-2">La fréquence du suivi dépend de la sévérité de la BPCO et de la stabilité du patient :</p>
+        <ul className="list-disc list-inside space-y-1 text-base text-gray-600 ml-4">
+            <li><strong>Patient stable:</strong> 1 à 2 fois par an.</li>
+            <li><strong>Après une exacerbation:</strong> Dans les 1-4 semaines (suivi précoce) et à nouveau vers 12 semaines (suivi tardif).</li>
+            <li><strong>Objectifs principaux:</strong> Surveiller la progression, évaluer l'efficacité du traitement, vérifier l'observance, ajuster le traitement, gérer les comorbidités, prévenir les exacerbations.</li>
         </ul>
-        <p className="mt-4 text-xs text-gray-500">Ce module est en cours de développement pour un support de suivi interactif.</p>
-      </div>
+      </ExternalExpandableSection>
+
+      <ExternalExpandableSection title="Évaluation Clinique Régulière" icon={ClipboardList as IconComponent} sectionKey="followupClinicalEval" isExpanded={!!expandedSections["followupClinicalEval"]} onToggle={() => onToggleSection("followupClinicalEval")}>
+        <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
+            <li><strong>Symptômes:</strong> Utilisation des scores mMRC et CAT pour quantifier la dyspnée et l'impact sur la qualité de vie.</li>
+            <li><strong>Historique des exacerbations:</strong> Nombre, sévérité, causes possibles, traitement reçu.</li>
+            <li><strong>Statut tabagique:</strong> Encouragement et aide à l'arrêt systématique.</li>
+            <li><strong>Exposition aux facteurs de risque:</strong> Pollution, expositions professionnelles.</li>
+            <li><strong>Examen clinique:</strong> Poids, signes d'insuffisance cardiaque droite, etc.</li>
+        </ul>
+      </ExternalExpandableSection>
+
+      <ExternalExpandableSection title="Surveillance Fonctionnelle et Thérapeutique" icon={Baseline as IconComponent} sectionKey="followupFunctional" isExpanded={!!expandedSections["followupFunctional"]} onToggle={() => onToggleSection("followupFunctional")}>
+        <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
+            <li><strong>Spirométrie:</strong> Au moins une fois par an chez la plupart des patients. Plus fréquemment si déclin rapide ou changement clinique significatif. Mesure du VEMS post-bronchodilatateur.</li>
+            <li><strong>Technique d'inhalation:</strong> À vérifier à chaque visite. Une mauvaise technique est une cause fréquente d'inefficacité du traitement.</li>
+            <li><strong>Observance thérapeutique:</strong> Discuter ouvertement des difficultés et chercher des solutions.</li>
+            <li><strong>Saturation en oxygène (SpO2):</strong> Mesure au repos, et à l'effort si pertinent.</li>
+        </ul>
+      </ExternalExpandableSection>
+      
+      <ExternalExpandableSection title="Prise en Charge Non-Pharmacologique Continue" icon={Bike as IconComponent} sectionKey="followupNonPharma" isExpanded={!!expandedSections["followupNonPharma"]} onToggle={() => onToggleSection("followupNonPharma")}>
+        <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
+            <li><strong>Activité physique:</strong> Encourager et maintenir un niveau d'activité physique adapté.</li>
+            <li><strong>Réhabilitation respiratoire:</strong> Répéter si nouvelle détérioration fonctionnelle ou post-exacerbation sévère. Programmes d'entretien.</li>
+            <li><strong>Vaccinations:</strong> Vérifier le statut et administrer les vaccins recommandés (grippe, pneumocoque, COVID-19, coqueluche).</li>
+            <li><strong>Nutrition:</strong> Dépister la dénutrition ou l'obésité, conseils diététiques.</li>
+            <li><strong>Oxygénothérapie de longue durée (OLD):</strong> Réévaluer régulièrement les indications et l'observance.</li>
+            <li><strong>Ventilation non invasive (VNI) à domicile:</strong> Pour les patients sélectionnés, surveillance de l'efficacité et de l'observance.</li>
+        </ul>
+      </ExternalExpandableSection>
+
+      <ExternalExpandableSection title="Gestion des Comorbidités" icon={HeartPulse as IconComponent} sectionKey="followupComorbidities" isExpanded={!!expandedSections["followupComorbidities"]} onToggle={() => onToggleSection("followupComorbidities")}>
+        <p className="text-base text-gray-700 mb-2">Les comorbidités sont fréquentes et impactent le pronostic. Les plus courantes incluent :</p>
+        <ul className="list-disc list-inside space-y-1 text-base text-gray-600 ml-4">
+            <li>Maladies cardiovasculaires (cardiopathie ischémique, insuffisance cardiaque, HTA).</li>
+            <li>Ostéoporose.</li>
+            <li>Anxiété et dépression.</li>
+            <li>Diabète.</li>
+            <li>Cancer du poumon (dépistage chez les fumeurs/ex-fumeurs éligibles).</li>
+            <li>Syndrome d'apnées du sommeil.</li>
+        </ul>
+        <p className="text-base text-gray-700 mt-2">Nécessite une prise en charge coordonnée avec les autres spécialistes impliqués.</p>
+      </ExternalExpandableSection>
+
+      <ExternalExpandableSection title="Plan d'Action Personnalisé" icon={FilePenLine as IconComponent} sectionKey="followupActionPlan" isExpanded={!!expandedSections["followupActionPlan"]} onToggle={() => onToggleSection("followupActionPlan")}>
+        <p className="text-base text-gray-700">Réviser et mettre à jour régulièrement le plan d'action pour la gestion des exacerbations. S'assurer que le patient comprend quand et comment l'utiliser.</p>
+      </ExternalExpandableSection>
+      
+      <ExternalExpandableSection title="Soins Palliatifs et Planification Anticipée des Soins" icon={HandHeart as IconComponent} sectionKey="followupPalliative" isExpanded={!!expandedSections["followupPalliative"]} onToggle={() => onToggleSection("followupPalliative")}>
+        <p className="text-base text-gray-700">Pour les patients avec BPCO sévère et très symptomatique, aborder la discussion sur les soins palliatifs et la planification anticipée des soins (directives anticipées, personne de confiance) pour améliorer la qualité de vie et respecter les souhaits du patient en fin de vie.</p>
+      </ExternalExpandableSection>
     </div>
-  ));
+  )});
   FollowUpStep.displayName = 'FollowUpStep';
 
-  // Redefine StepDefinitionType to use the common props or specific ones
   interface AppStepDefinition<P = StepComponentCommonProps> extends Omit<StepDefinitionType, 'component'> {
     component: React.FC<P>;
   }
   
-  // CAT Modal related state and handlers
   const [isCATModalOpen, setCATModalOpen] = useState(false);
   const handleOpenCATModal = useCallback(() => setCATModalOpen(true), []);
   const handleCloseCATModal = useCallback(() => setCATModalOpen(false), []);
@@ -1119,7 +1359,7 @@ const COPDDecisionSupport: React.FC = () => {
       }
     });
     handleCloseCATModal();
-  }, [clearValidationError, handleCloseCATModal, startTransition]); // setPatientData is stable
+  }, [clearValidationError, handleCloseCATModal, startTransition]); 
 
 
   const catQuestions = useMemo((): CATQuestion[] => [
@@ -1154,8 +1394,8 @@ const COPDDecisionSupport: React.FC = () => {
     { id: 'diagnostic', title: 'Diagnostic', icon: Calculator as IconComponent, component: DiagnosticStep as React.FC<StepComponentCommonProps>},
     { id: 'assessment', title: 'Évaluation', icon: Activity as IconComponent, component: AssessmentStep as React.FC<AssessmentStepProps> },
     { id: 'treatment', title: 'Traitement', icon: Settings as IconComponent, component: TreatmentStep as React.FC<TreatmentStepProps>},
-    { id: 'exacerbation', title: 'Exacerbations', icon: AlertTriangle as IconComponent, component: ExacerbationStep as React.FC<StepComponentCommonProps> },
-    { id: 'followup', title: 'Suivi', icon: FileText as IconComponent, component: FollowUpStep as React.FC<StepComponentCommonProps> }
+    { id: 'exacerbation', title: 'Exacerbations', icon: AlertOctagon as IconComponent, component: ExacerbationStep as React.FC<StepComponentCommonProps> },
+    { id: 'followup', title: 'Suivi', icon: Repeat as IconComponent, component: FollowUpStep as React.FC<StepComponentCommonProps> }
   ], []);
 
   const currentStepIndex = steps.findIndex(step => step.id === currentStep);
@@ -1200,6 +1440,10 @@ const COPDDecisionSupport: React.FC = () => {
       window.scrollTo(0, 0);
     });
   }, [steps, currentStepIndex, startTransition]);
+
+  const handleClosePrintReport = useCallback(() => {
+    setShowPrintReport(false);
+  }, []); 
   
   if (!CurrentStepConfig || !CurrentStepConfig.component) {
     return <div className="p-8 text-center text-red-500">Erreur: Étape non trouvée. Veuillez rafraîchir la page.</div>;
@@ -1211,10 +1455,10 @@ const COPDDecisionSupport: React.FC = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-3">
             Outil d'Aide à la Décision BPCO
           </h1>
-          <p className="text-gray-600 text-sm sm:text-base">
+          <p className="text-gray-600 text-base sm:text-lg">
             Basé sur les recommandations{' '}
             <a 
               href="https://goldcopd.org/2025-gold-report-home/" 
@@ -1243,7 +1487,7 @@ const COPDDecisionSupport: React.FC = () => {
                       window.scrollTo(0, 0);
                     });
                   }}
-                  className={`flex items-center space-x-2 px-3 py-2 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                  className={`flex items-center space-x-2 px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
                     ${ isActive 
                       ? 'bg-blue-600 text-white shadow-md scale-105' 
                       : isCompleted
@@ -1261,7 +1505,7 @@ const COPDDecisionSupport: React.FC = () => {
           </div>
           {isPending && (
             <div className="text-center mt-3">
-              <span className="text-sm text-gray-500 italic">Chargement de l'étape...</span>
+              <span className="text-base text-gray-500 italic">Chargement de l'étape...</span>
             </div>
           )}
         </nav>
@@ -1293,7 +1537,7 @@ const COPDDecisionSupport: React.FC = () => {
           <button
             onClick={handlePrevious}
             disabled={currentStepIndex === 0 || isPending}
-            className="w-full sm:w-auto px-6 py-3 bg-gray-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors font-medium text-sm shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            className="w-full sm:w-auto px-6 py-3 bg-gray-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors font-medium text-base shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Précédent
           </button>
@@ -1307,7 +1551,7 @@ const COPDDecisionSupport: React.FC = () => {
                     }
                 }}
                 disabled={isPending}
-                className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2 transition-colors font-medium text-sm shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-60"
+                className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2 transition-colors font-medium text-base shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-60"
               >
                 <Printer className="w-4 h-4" aria-hidden="true" />
                 <span>Générer Rapport</span>
@@ -1317,7 +1561,7 @@ const COPDDecisionSupport: React.FC = () => {
             <button
               onClick={handleNext}
               disabled={currentStepIndex === steps.length - 1 || !canProceedToNext || isPending}
-              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium text-sm shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium text-base shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               {currentStepIndex === steps.length - 1 ? 'Terminer' : 'Suivant'}
             </button>
@@ -1326,8 +1570,8 @@ const COPDDecisionSupport: React.FC = () => {
 
         {Object.values(patientData).some(value => (typeof value === 'string' && value.trim() !== '') || (typeof value === 'boolean' && value) || (Array.isArray(value) && value.length > 0) ) && (
           <aside className="mt-10 p-4 bg-gray-50 rounded-lg shadow border border-gray-200" role="complementary">
-            <h3 className="font-semibold text-gray-700 mb-2 text-sm">Résumé Patient Actuel :</h3>
-            <div className="text-xs text-gray-600 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            <h3 className="font-semibold text-gray-700 mb-2 text-base">Résumé Patient Actuel :</h3>
+            <div className="text-sm text-gray-600 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
               {patientData.patientName && (<span><strong>Patient:</strong> {patientData.patientName}</span>)}
               {patientData.patientAge && (<span><strong>Âge:</strong> {patientData.patientAge} ans</span>)}
               {patientData.postBronchodilatorFEV1FVC && (<span><strong>VEMS/CVF:</strong> {patientData.postBronchodilatorFEV1FVC}</span>)}
@@ -1337,6 +1581,7 @@ const COPDDecisionSupport: React.FC = () => {
               {(patientData.mmrcScore !== '' || calculateCATScore !== null) && calculateGOLDGroup !== 'Inconnu' && (
                 <span className="font-medium text-gray-800"><strong>Groupe:</strong> {calculateGOLDGroup}</span>
               )}
+               {patientData.bloodEosinophils && (<span><strong>Éos:</strong> {patientData.bloodEosinophils} c/µL</span>)}
             </div>
           </aside>
         )}
@@ -1346,19 +1591,19 @@ const COPDDecisionSupport: React.FC = () => {
                 patientData={patientData} 
                 calculateCATScore={calculateCATScore} 
                 goldGroup={calculateGOLDGroup} 
-                onClose={() => setShowPrintReport(false)} 
+                onClose={handleClosePrintReport} 
             />}
 
         <footer className="mt-12 pt-8 border-t border-gray-300 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-sm text-gray-500">
             Application développée par Dr Zouhair Souissi © 2025
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-sm text-gray-500">
             Outil à usage informatif pour professionnels de santé. Ne remplace pas le jugement clinique
           </p>
         </footer>
       </div>
-      {isCATModalOpen && ( // Ensure CAT modal is rendered at the top level if it's controlled here.
+      {isCATModalOpen && ( 
             <CATScoreModal
                 isOpen={isCATModalOpen}
                 onClose={handleCloseCATModal}
@@ -1371,4 +1616,5 @@ const COPDDecisionSupport: React.FC = () => {
   );
 };
 
-export default COPDDecisionSupport;
+// No default export here, it's a named export now
+// export default COPDDecisionSupport; // This line is removed or commented out

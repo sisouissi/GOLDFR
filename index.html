@@ -11,31 +11,49 @@
         @page {
           margin: 2cm;
         }
+
+        html, body {
+          height: auto !important;
+          overflow: visible !important;
+          background: white !important; /* Ensure clean background */
+          margin: 0;
+          padding: 0;
+        }
+
         body * {
           visibility: hidden;
+          transform: none !important; /* Reset transforms */
+          box-sizing: border-box !important; /* Reset box-sizing */
         }
+
+        #printable-report-modal-content-box { /* Explicitly hide the modal panel box */
+            visibility: hidden !important;
+        }
+
         #printable-report, #printable-report * {
           visibility: visible;
         }
+
         #printable-report {
           position: absolute;
           left: 0;
           top: 0;
-          width: 100%; /* Uses full width within @page margins */
-          margin: 0;
-          padding: 0; /* Maintained for compactness as per previous requests */
-          border: none;
-          box-shadow: none;
-          font-size: 10pt; /* Reduced base font size for print */
-          line-height: 1.25; /* Adjusted line height for print */
-          overflow: visible !important; /* Allow content to overflow for pagination */
-          height: auto !important;     /* Allow height to grow with content */
-          max-height: none !important;  /* Remove any max-height constraint */
+          right: 0; /* Ensures full width within page margins */
+          width: 100%; /* Fallback, right:0 is often better for absolute */
+          margin: 0 !important;
+          padding: 0 !important; /* Screen padding is on this element, remove for print. Content inside has its own. */
+          border: none !important;
+          box-shadow: none !important;
+          font-size: 11pt; 
+          line-height: 1.25; 
+          overflow: visible !important; 
+          height: auto !important;    
+          max-height: none !important; 
         }
         .print-hide {
           display: none !important;
         }
-        /* Ensure text is black and backgrounds are transparent for printing */
+        
         #printable-report h1, #printable-report h2, #printable-report h3, 
         #printable-report p, #printable-report div, #printable-report span, 
         #printable-report strong, #printable-report ul, #printable-report li {
@@ -45,43 +63,42 @@
         #printable-report .text-blue-800, 
         #printable-report .text-green-700, 
         #printable-report .text-red-700,
-        #printable-report .text-purple-700, /* Adjusted for purple in report */
+        #printable-report .text-purple-700, 
         #printable-report .text-purple-800 {
             color: #000 !important;
         }
         #printable-report .bg-blue-50,
         #printable-report .bg-purple-50,
-        #printable-report .bg-green-50, /* Added for consistency if used */
-        #printable-report .bg-yellow-50, /* Added for consistency if used */
-        #printable-report .bg-red-50 {  /* Added for consistency if used */
+        #printable-report .bg-green-50, 
+        #printable-report .bg-yellow-50, 
+        #printable-report .bg-red-50 {  
             background-color: transparent !important;
-            border: 0.5pt solid #ccc !important; /* Light border for delineation */
-            padding: 0.2cm !important; /* Reduced padding */
+            border: 0.5pt solid #ccc !important; 
+            padding: 0.2cm !important; 
         }
 
-        /* Specific overrides for PrintReport structure for compactness */
-        #printable-report .text-center.mb-8 { /* Header container */
+        #printable-report .text-center.mb-8 { 
           margin-bottom: 0.4cm !important;
           padding-bottom: 0.2cm !important;
         }
-        #printable-report h1#report-title { /* Main title */
-          font-size: 15pt !important; /* Reduced */
+        #printable-report h1#report-title { 
+          font-size: 16pt !important; 
           margin-bottom: 0.1cm !important;
         }
-         #printable-report .text-gray-600 { /* Subtitle below main title */
-            font-size: 9pt !important;
+         #printable-report .text-gray-600 { 
+            font-size: 10pt !important;
             margin-bottom: 0.05cm !important;
         }
-        #printable-report .text-sm.text-gray-500 { /* Date below main title */
-            font-size: 8pt !important;
+        #printable-report .text-sm.text-gray-500 { /* This targets the disclaimer */
+            font-size: 9pt !important;
         }
 
-        #printable-report section { /* Sections */
+        #printable-report section { 
           margin-bottom: 0.3cm !important;
-          page-break-inside: avoid;
+          page-break-inside: auto !important; /* Allow natural breaks */
         }
-        #printable-report h2 { /* Section titles */
-          font-size: 11pt !important; /* Reduced */
+        #printable-report h2 { 
+          font-size: 12pt !important; 
           font-weight: bold !important;
           margin-bottom: 0.15cm !important;
           padding-bottom: 0.05cm !important;
@@ -89,7 +106,7 @@
         }
         
         #printable-report .grid {
-           /* Keeping grid, just reducing gaps */
+           /* Grid itself is fine, just spacing adjustments */
         }
         #printable-report .gap-x-4 {
           column-gap: 0.2cm !important; 
@@ -97,22 +114,20 @@
         #printable-report .gap-y-2 {
           row-gap: 0.05cm !important;
         }
-        #printable-report div[class*="gap-y-"] > div { /* Reduce space between grid items text */
+        #printable-report div[class*="gap-y-"] > div { 
            line-height: 1.2 !important;
         }
 
-
-        /* Reduce spacing from Tailwind space utilities */
         #printable-report .space-y-1 > * + * { margin-top: 0.05cm !important; }
         #printable-report .space-y-2 > * + * { margin-top: 0.1cm !important; }
         #printable-report .space-y-3 > * + * { margin-top: 0.15cm !important; }
 
-        #printable-report .text-lg { font-size: 11pt !important; }
-        #printable-report .text-sm { font-size: 9pt !important; }
-        #printable-report .text-xs { font-size: 7.5pt !important; line-height: 1.1 !important; }
+        #printable-report .text-lg { font-size: 12pt !important; } /* If .text-lg exists on printed elements */
+        #printable-report .text-sm { font-size: 10pt !important; } /* If .text-sm exists on printed elements */
+        #printable-report .text-xs { font-size: 8.5pt !important; line-height: 1.1 !important; } /* If .text-xs exists */
         
         #printable-report strong {
-            font-weight: bold; /* Ensure strong is bold */
+            font-weight: bold; 
         }
 
         #printable-report ul {
@@ -125,21 +140,20 @@
           padding-left: 0.1cm !important;
         }
         #printable-report ul.list-disc {
-            list-style-position: outside !important; /* Ensure bullets are visible */
+            list-style-position: outside !important; 
         }
         
-        #printable-report .mt-8.border-t.pt-4 { /* Footer disclaimer */
+        #printable-report .mt-8.border-t.pt-4 { 
           margin-top: 0.4cm !important;
           padding-top: 0.15cm !important;
           border-top-width: 0.5pt !important;
         }
-         #printable-report .mt-1 { margin-top: 0.05cm !important; } /* Specific for recommendation text */
+         #printable-report .mt-1 { margin-top: 0.05cm !important; } 
 
-        /* Attempt to prevent page breaks within logical blocks */
         #printable-report .bg-purple-50, 
         #printable-report .grid > div,
-        #printable-report section > div { /* Added to help keep section content together */
-          page-break-inside: avoid;
+        #printable-report section > div { 
+          page-break-inside: auto !important; /* Allow natural breaks */
         }
       }
     </style>

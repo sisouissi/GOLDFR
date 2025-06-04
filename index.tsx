@@ -1,7 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import COPDDecisionSupport from './App'; // Changed from App to COPDDecisionSupport
+import { COPDDecisionSupport } from './App'; // Changed to named import
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
