@@ -999,7 +999,6 @@ const COPDDecisionSupport: React.FC = () => {
 
             <div className="text-xs text-gray-500 mt-8 border-t border-gray-200 pt-4">
               <p>Ce rapport est un outil d'aide à la décision généré sur la base des informations fournies et des recommandations GOLD 2025. Il ne remplace pas le jugement clinique.</p>
-              <p>Il doit être interprété et utilisé par un professionnel de santé qualifié dans le contexte clinique global du patient.</p>
             </div>
           </div>
 
