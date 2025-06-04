@@ -1201,7 +1201,7 @@ export const COPDDecisionSupport: React.FC = () => {
                 <ExternalExpandableSection title="Indications d'Hospitalisation" icon={Hospital as IconComponent} sectionKey="exacHospital" isExpanded={!!expandedSections["exacHospital"]} onToggle={() => onToggleSection("exacHospital")}>
                     <ul className="list-disc list-inside space-y-1 text-base text-gray-700">
                     <li>Symptômes sévères: aggravation soudaine de la dyspnée au repos, fréquence respiratoire élevée, SpO2 basse, confusion, somnolence.</li>
-                    <li>Insuffisance respiratoire aiguë (PaO2 {"<"} 60 mmHg et/ou SaO2 {"<"} 90% avec ou sans PaCO2 > 50 mmHg).</li>
+                    <li>Insuffisance respiratoire aiguë (PaO2 {"<"} 60 mmHg et/ou SaO2 {"<"} 90% avec ou sans PaCO2 {'>'} 50 mmHg).</li>
                     <li>Apparition de nouveaux signes physiques (ex: cyanose, œdèmes périphériques).</li>
                     <li>Échec de la réponse au traitement initial de l'exacerbation.</li>
                     <li>Comorbidités sévères (ex: insuffisance cardiaque, arythmies cardiaques nouvelles).</li>
@@ -1599,7 +1599,7 @@ export const COPDDecisionSupport: React.FC = () => {
 
         <footer className="mt-12 pt-8 border-t border-gray-300 text-center">
           <p className="text-sm text-gray-500">
-            Application développée par Dr Zouhair Souissi © 2025
+            Application développée par Dr Zouhair Souissi {'©'} 2025
           </p>
           <p className="text-sm text-gray-500">
             Outil à usage informatif pour professionnels de santé. Ne remplace pas le jugement clinique
