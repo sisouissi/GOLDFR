@@ -905,8 +905,36 @@ const COPDDecisionSupport: React.FC = () => {
   }
 
   const PrintReport = React.memo(({ patientData, calculateCATScore, goldGroup, onClose }: PrintReportProps) => {
+    const [isPrinting, setIsPrinting] = useState(false);
     const currentDate = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
     
+    useEffect(() => {
+      const handleBeforePrint = () => {
+        setIsPrinting(true);
+      };
+      const handleAfterPrint = () => {
+        setIsPrinting(false);
+        // Optional: Automatically close the modal after printing/canceling
+        // onClose(); 
+      };
+  
+      window.addEventListener('beforeprint', handleBeforePrint);
+      window.addEventListener('afterprint', handleAfterPrint);
+  
+      return () => {
+        window.removeEventListener('beforeprint', handleBeforePrint);
+        window.removeEventListener('afterprint', handleAfterPrint);
+      };
+    }, [/* onClose if you decide to use it in handleAfterPrint */]);
+
+    const triggerPrint = () => {
+      // The isPrinting state is primarily managed by browser events,
+      // but this check can prevent issues if the button is clicked rapidly
+      // before the 'beforeprint' event fires.
+      if (isPrinting) return;
+      window.print();
+    };
+
     const getGoldGradeText = useMemo(() => {
       if (!patientData.fev1Predicted || isNaN(parseInt(patientData.fev1Predicted))) return 'Non renseigné';
       const fev1 = parseInt(patientData.fev1Predicted);
@@ -919,6 +947,7 @@ const COPDDecisionSupport: React.FC = () => {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="report-title">
         <div className="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col rounded-lg shadow-2xl">
+          {/* This div has overflow-y-auto for screen display. Print CSS overrides for #printable-report */}
           <div className="overflow-y-auto p-6 sm:p-8" id="printable-report">
             <div className="text-center mb-8 border-b-2 border-gray-300 pb-4">
               <h1 id="report-title" className="text-2xl font-bold text-gray-900">RAPPORT D'ÉVALUATION BPCO</h1>
@@ -1010,8 +1039,9 @@ const COPDDecisionSupport: React.FC = () => {
               Fermer
             </button>
             <button
-              onClick={() => window.print()}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors"
+              onClick={triggerPrint}
+              disabled={isPrinting}
+              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-2 transition-colors ${isPrinting ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <Printer className="w-4 h-4" aria-hidden="true" />
               <span>Imprimer</span>

@@ -23,11 +23,14 @@
           top: 0;
           width: 100%; /* Uses full width within @page margins */
           margin: 0;
-          padding: 0;
+          padding: 0; /* Maintained for compactness as per previous requests */
           border: none;
           box-shadow: none;
           font-size: 10pt; /* Reduced base font size for print */
           line-height: 1.25; /* Adjusted line height for print */
+          overflow: visible !important; /* Allow content to overflow for pagination */
+          height: auto !important;     /* Allow height to grow with content */
+          max-height: none !important;  /* Remove any max-height constraint */
         }
         .print-hide {
           display: none !important;
@@ -134,7 +137,8 @@
 
         /* Attempt to prevent page breaks within logical blocks */
         #printable-report .bg-purple-50, 
-        #printable-report .grid > div { 
+        #printable-report .grid > div,
+        #printable-report section > div { /* Added to help keep section content together */
           page-break-inside: avoid;
         }
       }
