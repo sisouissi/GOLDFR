@@ -56,25 +56,27 @@ export type CATScoreFields = Pick<PatientData,
 export type ValidationErrors = Partial<Record<keyof PatientData | 'catScore' | 'postBronchodilatorFEV1FVC' | 'fev1Predicted' | 'mmrcScore', string>>;
 
 
-export interface ExpandableSectionProps {
+export interface ExpandableSectionProps { // Original props, ExternalExpandableSectionProps will extend or use these
   title: string;
-  icon: React.ElementType; // More generic: React.FC<LucideProps> or React.ComponentType any for specific icon libs
+  icon: React.ElementType; 
   children: React.ReactNode;
   sectionKey: string;
 }
 
 export interface CATQuestion {
-  field: keyof PatientData; // This can remain keyof PatientData as CAT fields are part of it
+  field: keyof PatientData; 
   question: string;
   opposite: string;
   description: string;
 }
 
-export interface StepDefinition {
+// Changed: component type now accepts props, P defaults to any for flexibility
+// but should be constrained by specific step prop types later.
+export interface StepDefinition<P = any> {
   id: string;
   title: string;
-  icon: React.ElementType; // React.FC<LucideProps>
-  component: React.MemoExoticComponent<React.FC<{}>>;
+  icon: React.ElementType; 
+  component: React.FC<P>; // Component now accepts props
 }
 
 export interface TreatmentRecommendation {

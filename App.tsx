@@ -1,10 +1,127 @@
 
 import React, { useState, useCallback, useMemo, useTransition, useDeferredValue, useEffect } from 'react';
-import { PatientData, ValidationErrors, ExpandableSectionProps, CATQuestion, StepDefinition, TreatmentRecommendation, CATScoreFields } from './types';
+import { PatientData, ValidationErrors, CATQuestion, StepDefinition as StepDefinitionType, TreatmentRecommendation, CATScoreFields } from './types'; // Renamed StepDefinition to StepDefinitionType to avoid conflict
 import { ChevronRight, ChevronDown, AlertTriangle, CheckCircle, Info, Calculator, FileText, Activity, Users, Settings, Printer, User, LucideProps, X } from 'lucide-react';
 
 // Helper to type Lucide icons more strictly if needed, otherwise React.ElementType is fine
 type IconComponent = React.FC<LucideProps>;
+
+// Props for ExpandableSection (externalized)
+interface ExternalExpandableSectionProps {
+  title: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+  sectionKey: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+const ExternalExpandableSection: React.FC<ExternalExpandableSectionProps> = React.memo(({
+  title,
+  icon: Icon,
+  children,
+  sectionKey,
+  isExpanded,
+  onToggle
+}) => {
+  return (
+    <div className="border border-gray-200 rounded-lg mb-4 shadow-sm">
+      <button
+        className="w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+        aria-controls={`section-content-${sectionKey}`}
+      >
+        <div className="flex items-center space-x-3">
+          <Icon className="w-6 h-6 text-blue-600" />
+          <span className="font-semibold text-left text-gray-700">{title}</span>
+        </div>
+        {isExpanded ? <ChevronDown className="w-5 h-5 text-gray-600" /> : <ChevronRight className="w-5 h-5 text-gray-600" />}
+      </button>
+      {isExpanded && (
+        <div id={`section-content-${sectionKey}`} className="p-4 border-t border-gray-200 bg-white">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+});
+ExternalExpandableSection.displayName = 'ExternalExpandableSection';
+
+
+// Props for PatientInfoStep (externalized)
+interface PatientInfoStepProps {
+  patientData: PatientData;
+  handleFieldChange: <K extends keyof PatientData>(field: K, value: PatientData[K]) => void;
+  validationErrors: ValidationErrors;
+}
+
+const PatientInfoStep: React.FC<PatientInfoStepProps> = React.memo(({
+  patientData,
+  handleFieldChange,
+  validationErrors
+}) => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">Informations du patient</h3>
+        <p className="text-blue-700 text-sm">Saisissez les informations de base du patient pour commencer l'évaluation.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">Nom et prénom du patient *</label>
+          <input
+            id="patientName"
+            type="text"
+            value={patientData.patientName}
+            onChange={(e) => handleFieldChange('patientName', e.target.value)}
+            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              validationErrors.patientName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Nom Prénom"
+            autoComplete="name"
+          />
+          {validationErrors.patientName && (
+            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientName}</p>
+          )}
+        </div>
+        
+        <div>
+          <label htmlFor="patientAge" className="block text-sm font-medium text-gray-700 mb-1">Âge *</label>
+          <input
+            id="patientAge"
+            type="number"
+            min="18"
+            max="120"
+            value={patientData.patientAge}
+            onChange={(e) => handleFieldChange('patientAge', e.target.value)}
+            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              validationErrors.patientAge ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="65"
+            autoComplete="age"
+          />
+          {validationErrors.patientAge && (
+            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientAge}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+        <div className="flex items-center space-x-2 mb-2">
+          <CheckCircle className="w-5 h-5 text-green-600" aria-hidden="true" />
+          <span className="font-semibold text-green-800">Prêt à commencer</span>
+        </div>
+        <p className="text-green-700 text-sm">
+          Une fois les informations saisies, vous pourrez procéder à l'évaluation diagnostique selon les critères GOLD 2025.
+        </p>
+      </div>
+    </div>
+  );
+});
+PatientInfoStep.displayName = 'PatientInfoStep';
+
 
 const initialPatientData: PatientData = {
   patientName: '',
@@ -57,7 +174,6 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
   const [localCatScores, setLocalCatScores] = useState<CATScoreFields>(initialData);
 
   useEffect(() => {
-    // Reset local scores if the modal is reopened with different initial data
     if (isOpen) {
       setLocalCatScores(initialData);
     }
@@ -75,7 +191,6 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
 
     if (allFilled) {
       onSubmit(localCatScores);
-      // onClose will be called by the parent's onSubmit handler
     } else {
       alert("Veuillez répondre à toutes les questions du score CAT pour valider.");
     }
@@ -148,6 +263,16 @@ const CATScoreModal: React.FC<CATScoreModalProps> = ({ isOpen, onClose, onSubmit
 };
 CATScoreModal.displayName = 'CATScoreModal';
 
+// Common props for all step components
+interface StepComponentCommonProps {
+  patientData: PatientData;
+  handleFieldChange: <K extends keyof PatientData>(field: K, value: PatientData[K]) => void;
+  validationErrors: ValidationErrors;
+  expandedSections: Record<string, boolean>;
+  onToggleSection: (sectionKey: string) => void;
+  // Add other common props if needed by most steps
+}
+
 
 const COPDDecisionSupport: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<string>('patient-info');
@@ -164,10 +289,8 @@ const COPDDecisionSupport: React.FC = () => {
   const calculateCATScore = useMemo(() => {
     const catFields: (keyof CATScoreFields)[] = ['catCough', 'catPhlegm', 'catChestTightness', 'catBreathlessness', 
                       'catActivityLimitation', 'catConfidenceLeaving', 'catSleep', 'catEnergy'];
-    
     let total = 0;
     let completedFields = 0;
-    
     catFields.forEach(field => {
       const valueStr = deferredPatientData[field] as string;
       if (valueStr && valueStr.trim() !== '') {
@@ -178,13 +301,8 @@ const COPDDecisionSupport: React.FC = () => {
         completedFields++;
       }
     });
-    
     return completedFields === catFields.length ? total : null;
   }, [deferredPatientData]);
-
-  const handleInputChange = useCallback(<K extends keyof PatientData,>(field: K, value: PatientData[K]) => {
-    setPatientData(prev => ({ ...prev, [field]: value }));
-  }, []);
 
   const clearValidationError = useCallback((field: keyof ValidationErrors) => {
     setValidationErrors(prev => {
@@ -197,16 +315,21 @@ const COPDDecisionSupport: React.FC = () => {
     });
   }, []);
 
-  const handleFieldChange = useCallback(<K extends keyof PatientData,>(field: K, value: PatientData[K]) => {
-    handleInputChange(field, value);
-    startTransition(() => {
-      clearValidationError(field);
+  const handleFieldChange = useCallback(<K extends keyof PatientData>(field: K, value: PatientData[K]) => {
+    setPatientData(prevData => ({ ...prevData, [field]: value }));
+    setValidationErrors(prevErrors => {
+        const fieldName = field as keyof ValidationErrors;
+        if (prevErrors[fieldName]) {
+            const newErrors = { ...prevErrors };
+            delete newErrors[fieldName];
+            return newErrors;
+        }
+        return prevErrors;
     });
-  }, [handleInputChange, clearValidationError]);
+  }, []);
 
   const validateCurrentStep = useCallback(() => {
     const errors: ValidationErrors = {};
-    
     switch(currentStep) {
       case 'patient-info':
         if (!patientData.patientName.trim()) errors.patientName = 'Nom requis';
@@ -231,116 +354,39 @@ const COPDDecisionSupport: React.FC = () => {
         if (calculateCATScore === null) errors.catScore = 'Score CAT incomplet. Veuillez répondre à toutes les questions dans la fenêtre dédiée.';
         break;
     }
-    
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   }, [currentStep, patientData, calculateCATScore]);
 
-  const ExpandableSection: React.FC<ExpandableSectionProps> = React.memo(({ title, icon: Icon, children, sectionKey }) => {
-    const isExpanded = expandedSections[sectionKey];
-    
-    const toggleSection = useCallback(() => {
-      startTransition(() => {
-        setExpandedSections(prev => ({
-          ...prev,
-          [sectionKey]: !prev[sectionKey]
-        }));
-      });
-    }, [sectionKey]);
-    
+  const handleToggleSection = useCallback((sectionKey: string) => {
+    startTransition(() => {
+      setExpandedSections(prev => ({
+        ...prev,
+        [sectionKey]: !prev[sectionKey]
+      }));
+    });
+  }, [startTransition]); // setExpandedSections is stable
+
+
+  // These components will be moved outside or defined via useMemo with stable props if they depend on parent scope
+  // For now, DiagnosticStep and others remain inside to focus the fix on PatientInfoStep + ExpandableSection
+
+  const DiagnosticStep = React.memo((props: StepComponentCommonProps) => {
+    const { patientData, handleFieldChange, validationErrors, expandedSections, onToggleSection } = props;
     return (
-      <div className="border border-gray-200 rounded-lg mb-4 shadow-sm">
-        <button
-          className="w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={toggleSection}
-          aria-expanded={isExpanded}
-          aria-controls={`section-content-${sectionKey}`}
-        >
-          <div className="flex items-center space-x-3">
-            <Icon className="w-6 h-6 text-blue-600" />
-            <span className="font-semibold text-left text-gray-700">{title}</span>
-          </div>
-          {isExpanded ? <ChevronDown className="w-5 h-5 text-gray-600" /> : <ChevronRight className="w-5 h-5 text-gray-600" />}
-        </button>
-        {isExpanded && (
-          <div id={`section-content-${sectionKey}`} className="p-4 border-t border-gray-200 bg-white">
-            {children}
-          </div>
-        )}
-      </div>
-    );
-  });
-  ExpandableSection.displayName = 'ExpandableSection';
-
-
-  const PatientInfoStep = React.memo(() => (
-    <div className="space-y-6">
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Informations du patient</h3>
-        <p className="text-blue-700 text-sm">Saisissez les informations de base du patient pour commencer l'évaluation.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">Nom et prénom du patient *</label>
-          <input
-            id="patientName"
-            type="text"
-            value={patientData.patientName}
-            onChange={(e) => handleFieldChange('patientName', e.target.value)}
-            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              validationErrors.patientName ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Nom Prénom"
-            autoComplete="name"
-          />
-          {validationErrors.patientName && (
-            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientName}</p>
-          )}
-        </div>
-        
-        <div>
-          <label htmlFor="patientAge" className="block text-sm font-medium text-gray-700 mb-1">Âge *</label>
-          <input
-            id="patientAge"
-            type="number"
-            min="18"
-            max="120"
-            value={patientData.patientAge}
-            onChange={(e) => handleFieldChange('patientAge', e.target.value)}
-            className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              validationErrors.patientAge ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="65"
-            autoComplete="age"
-          />
-          {validationErrors.patientAge && (
-            <p className="text-red-600 text-xs mt-1" role="alert">{validationErrors.patientAge}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-        <div className="flex items-center space-x-2 mb-2">
-          <CheckCircle className="w-5 h-5 text-green-600" aria-hidden="true" />
-          <span className="font-semibold text-green-800">Prêt à commencer</span>
-        </div>
-        <p className="text-green-700 text-sm">
-          Une fois les informations saisies, vous pourrez procéder à l'évaluation diagnostique selon les critères GOLD 2025.
-        </p>
-      </div>
-    </div>
-  ));
-  PatientInfoStep.displayName = 'PatientInfoStep';
-
-  const DiagnosticStep = React.memo(() => (
     <div className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
         <h3 className="text-lg font-semibold text-blue-800 mb-2">Indicateurs cliniques pour considérer un diagnostic de BPCO</h3>
         <p className="text-blue-700 text-sm">Cochez les éléments présents chez votre patient :</p>
       </div>
 
-      <ExpandableSection title="Symptômes" icon={Activity as IconComponent} sectionKey="symptoms">
+      <ExternalExpandableSection 
+        title="Symptômes" 
+        icon={Activity as IconComponent} 
+        sectionKey="symptoms"
+        isExpanded={!!expandedSections["symptoms"]}
+        onToggle={() => onToggleSection("symptoms")}
+      >
         <div className="space-y-3" role="group" aria-labelledby="symptoms-heading">
           <h4 id="symptoms-heading" className="sr-only">Liste des symptômes à évaluer</h4>
           {[
@@ -360,9 +406,15 @@ const COPDDecisionSupport: React.FC = () => {
             </label>
           ))}
         </div>
-      </ExpandableSection>
+      </ExternalExpandableSection>
 
-      <ExpandableSection title="Facteurs de risque" icon={AlertTriangle as IconComponent} sectionKey="riskFactors">
+      <ExternalExpandableSection 
+        title="Facteurs de risque" 
+        icon={AlertTriangle as IconComponent} 
+        sectionKey="riskFactors"
+        isExpanded={!!expandedSections["riskFactors"]}
+        onToggle={() => onToggleSection("riskFactors")}
+      >
         <div className="space-y-3" role="group" aria-labelledby="risk-factors-heading">
           <h4 id="risk-factors-heading" className="sr-only">Facteurs de risque à évaluer</h4>
           {[
@@ -382,9 +434,15 @@ const COPDDecisionSupport: React.FC = () => {
             </label>
           ))}
         </div>
-      </ExpandableSection>
+      </ExternalExpandableSection>
 
-      <ExpandableSection title="Spirométrie *" icon={Calculator as IconComponent} sectionKey="spirometry">
+      <ExternalExpandableSection 
+        title="Spirométrie *" 
+        icon={Calculator as IconComponent} 
+        sectionKey="spirometry"
+        isExpanded={!!expandedSections["spirometry"]}
+        onToggle={() => onToggleSection("spirometry")}
+      >
         <div className="bg-yellow-50 p-4 rounded-lg mb-4 border border-yellow-200" role="alert">
           <div className="flex items-center space-x-2 mb-2">
             <Info className="w-5 h-5 text-yellow-600" aria-hidden="true" />
@@ -454,77 +512,41 @@ const COPDDecisionSupport: React.FC = () => {
              {' '} (Valeur: {patientData.postBronchodilatorFEV1FVC})
           </div>
         )}
-      </ExpandableSection>
+      </ExternalExpandableSection>
     </div>
-  ));
+  )});
   DiagnosticStep.displayName = 'DiagnosticStep';
 
   const calculateGOLDGroup = useMemo((): 'A' | 'B' | 'E' | 'Inconnu' => {
     if (!deferredPatientData.mmrcScore || calculateCATScore === null || !deferredPatientData.exacerbationsLastYear || !deferredPatientData.hospitalizationsLastYear) return 'Inconnu';
-
     const mmrc = parseInt(deferredPatientData.mmrcScore);
     const cat = calculateCATScore;
     const exacerbations = parseInt(deferredPatientData.exacerbationsLastYear);
     const hospitalizations = parseInt(deferredPatientData.hospitalizationsLastYear);
-
     if (isNaN(mmrc) || cat === null || isNaN(exacerbations) || isNaN(hospitalizations)) return 'Inconnu';
-    
-    if (exacerbations >= 2 || hospitalizations >= 1) {
-      return 'E';
-    }
-    
+    if (exacerbations >= 2 || hospitalizations >= 1) return 'E';
     const highSymptoms = mmrc >= 2 || cat >= 10;
     return highSymptoms ? 'B' : 'A';
   }, [deferredPatientData, calculateCATScore]);
 
-  const AssessmentStep = React.memo(() => {
-    const [isCATModalOpen, setCATModalOpen] = useState(false);
-
-    const catQuestions = useMemo((): CATQuestion[] => [
-      { field: 'catCough', question: 'Je ne tousse jamais', opposite: 'Je tousse tout le temps', description: 'Fréquence de la toux' },
-      { field: 'catPhlegm', question: 'Je n\'ai pas de glaires (mucus) dans la poitrine', opposite: 'Ma poitrine est complètement pleine de glaires (mucus)', description: 'Production d\'expectorations' },
-      { field: 'catChestTightness', question: 'Ma poitrine ne me semble pas du tout serrée', opposite: 'Ma poitrine me semble très serrée', description: 'Sensation d\'oppression thoracique' },
-      { field: 'catBreathlessness', question: 'Quand je marche en montée ou que je monte un étage, je ne suis pas essoufflé(e)', opposite: 'Quand je marche en montée ou que je monte un étage, je suis très essoufflé(e)', description: 'Dyspnée à l\'effort' },
-      { field: 'catActivityLimitation', question: 'Mes activités à la maison ne sont pas du tout limitées', opposite: 'Mes activités à la maison sont très limitées', description: 'Limitation des activités domestiques' },
-      { field: 'catConfidenceLeaving', question: 'Je sors de chez moi en toute confiance malgré ma maladie pulmonaire', opposite: 'Je n\'ai pas du tout confiance à sortir de chez moi à cause de ma maladie pulmonaire', description: 'Confiance pour sortir' },
-      { field: 'catSleep', question: 'Je dors très bien', opposite: 'Je ne dors pas bien du tout à cause de ma maladie pulmonaire', description: 'Qualité du sommeil' },
-      { field: 'catEnergy', question: 'J\'ai beaucoup d\'énergie', opposite: 'Je n\'ai pas d\'énergie du tout', description: 'Niveau d\'énergie' }
-    ], []);
-
-    const handleOpenCATModal = () => setCATModalOpen(true);
-    const handleCloseCATModal = () => setCATModalOpen(false);
-
-    const handleSubmitCATScores = useCallback((submittedScores: CATScoreFields) => {
-      startTransition(() => {
-        setPatientData(prev => ({
-          ...prev,
-          ...submittedScores
-        }));
-        // Check if all scores are now filled to clear potential validation error
-        const allFilled = Object.values(submittedScores).every(val => val !== '' && val !== undefined && val !== null);
-        if (allFilled) {
-            clearValidationError('catScore');
-        }
-      });
-      handleCloseCATModal();
-    }, [clearValidationError]);
+  // AssessmentStep specific props
+  interface AssessmentStepProps extends StepComponentCommonProps {
+    isCATModalOpen: boolean;
+    onOpenCATModal: () => void;
+    onCloseCATModal: () => void;
+    onSubmitCATScores: (scores: CATScoreFields) => void;
+    currentCATDataForModal: CATScoreFields;
+    catQuestions: CATQuestion[];
+    calculateCATScore: number | null; // Already in common, but emphasize
+  }
 
 
-    const currentCATData = useMemo((): CATScoreFields => ({
-        catCough: patientData.catCough,
-        catPhlegm: patientData.catPhlegm,
-        catChestTightness: patientData.catChestTightness,
-        catBreathlessness: patientData.catBreathlessness,
-        catActivityLimitation: patientData.catActivityLimitation,
-        catConfidenceLeaving: patientData.catConfidenceLeaving,
-        catSleep: patientData.catSleep,
-        catEnergy: patientData.catEnergy,
-    }), [
-        patientData.catCough, patientData.catPhlegm, patientData.catChestTightness, 
-        patientData.catBreathlessness, patientData.catActivityLimitation, 
-        patientData.catConfidenceLeaving, patientData.catSleep, patientData.catEnergy
-    ]);
-
+  const AssessmentStep = React.memo((props: AssessmentStepProps) => {
+    const { 
+        patientData, handleFieldChange, validationErrors, expandedSections, onToggleSection,
+        isCATModalOpen, onOpenCATModal, onCloseCATModal, onSubmitCATScores,
+        currentCATDataForModal, catQuestions, calculateCATScore
+    } = props;
 
     return (
       <div className="space-y-6">
@@ -533,7 +555,13 @@ const COPDDecisionSupport: React.FC = () => {
           <p className="text-green-700 text-sm">Évaluez la sévérité de l'obstruction, l'impact des symptômes et le risque d'exacerbations.</p>
         </div>
 
-        <ExpandableSection title="Classification de la sévérité (GOLD 1-4) *" icon={Calculator as IconComponent} sectionKey="goldGrade">
+        <ExternalExpandableSection 
+            title="Classification de la sévérité (GOLD 1-4) *" 
+            icon={Calculator as IconComponent} 
+            sectionKey="goldGrade"
+            isExpanded={!!expandedSections["goldGrade"]}
+            onToggle={() => onToggleSection("goldGrade")}
+        >
           <div className="mb-4">
             <label htmlFor="fev1-predicted" className="block text-sm font-medium text-gray-700 mb-1">
               VEMS (% de la valeur prédite) post-bronchodilatateur *
@@ -573,9 +601,15 @@ const COPDDecisionSupport: React.FC = () => {
               </div>
             </div>
           )}
-        </ExpandableSection>
+        </ExternalExpandableSection>
 
-        <ExpandableSection title="Évaluation des symptômes *" icon={Activity as IconComponent} sectionKey="symptomsEval">
+        <ExternalExpandableSection 
+            title="Évaluation des symptômes *" 
+            icon={Activity as IconComponent} 
+            sectionKey="symptomsEval"
+            isExpanded={!!expandedSections["symptomsEval"]}
+            onToggle={() => onToggleSection("symptomsEval")}
+        >
           <div className="space-y-6">
             <div>
               <h4 className="font-semibold text-gray-700 mb-3">Échelle mMRC (dyspnée) *</h4>
@@ -609,7 +643,7 @@ const COPDDecisionSupport: React.FC = () => {
             <div>
               <h4 className="font-semibold text-gray-700 mb-1">Test d'évaluation de la BPCO (CAT) *</h4>
                <button
-                onClick={handleOpenCATModal}
+                onClick={onOpenCATModal}
                 className="mb-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Saisir / Modifier Score CAT
@@ -641,9 +675,15 @@ const COPDDecisionSupport: React.FC = () => {
               </div>
             </div>
           </div>
-        </ExpandableSection>
+        </ExternalExpandableSection>
 
-        <ExpandableSection title="Historique d'exacerbations et Éosinophiles" icon={AlertTriangle as IconComponent} sectionKey="exacerbationsHistory">
+        <ExternalExpandableSection 
+            title="Historique d'exacerbations et Éosinophiles" 
+            icon={AlertTriangle as IconComponent} 
+            sectionKey="exacerbationsHistory"
+            isExpanded={!!expandedSections["exacerbationsHistory"]}
+            onToggle={() => onToggleSection("exacerbationsHistory")}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="exacerbations" className="block text-sm font-medium text-gray-700 mb-1">
@@ -690,13 +730,13 @@ const COPDDecisionSupport: React.FC = () => {
               placeholder="150"
             />
           </div>
-        </ExpandableSection>
-         {isCATModalOpen && (
+        </ExternalExpandableSection>
+         {isCATModalOpen && ( // This modal rendering should be at COPDDecisionSupport level or passed controls
             <CATScoreModal
                 isOpen={isCATModalOpen}
-                onClose={handleCloseCATModal}
-                onSubmit={handleSubmitCATScores}
-                initialData={currentCATData}
+                onClose={onCloseCATModal}
+                onSubmit={onSubmitCATScores}
+                initialData={currentCATDataForModal}
                 catQuestions={catQuestions}
             />
         )}
@@ -705,8 +745,14 @@ const COPDDecisionSupport: React.FC = () => {
   });
   AssessmentStep.displayName = 'AssessmentStep';
 
-  const TreatmentStep = React.memo(() => {
-    const goldGroup = calculateGOLDGroup;
+  interface TreatmentStepProps extends StepComponentCommonProps {
+    goldGroup: 'A' | 'B' | 'E' | 'Inconnu';
+    calculateCATScore: number | null;
+  }
+
+  const TreatmentStep = React.memo((props: TreatmentStepProps) => {
+    const { patientData, expandedSections, onToggleSection, goldGroup, calculateCATScore } = props;
+
     const getInitialTreatment = useMemo((): TreatmentRecommendation => {
       switch(goldGroup) {
         case 'A':
@@ -769,7 +815,13 @@ const COPDDecisionSupport: React.FC = () => {
           </div>
         </div>
 
-        <ExpandableSection title="Traitement pharmacologique initial" icon={Settings as IconComponent} sectionKey="pharmacological">
+        <ExternalExpandableSection 
+            title="Traitement pharmacologique initial" 
+            icon={Settings as IconComponent} 
+            sectionKey="pharmacological"
+            isExpanded={!!expandedSections["pharmacological"]}
+            onToggle={() => onToggleSection("pharmacological")}
+        >
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h4 className="font-semibold text-blue-800 mb-2">Groupe {goldGroup} - Traitement recommandé :</h4>
@@ -807,9 +859,15 @@ const COPDDecisionSupport: React.FC = () => {
               </div>
             )}
           </div>
-        </ExpandableSection>
+        </ExternalExpandableSection>
 
-        <ExpandableSection title="Traitement non-pharmacologique" icon={Activity as IconComponent} sectionKey="nonpharmacological">
+        <ExternalExpandableSection 
+            title="Traitement non-pharmacologique" 
+            icon={Activity as IconComponent} 
+            sectionKey="nonpharmacological"
+            isExpanded={!!expandedSections["nonpharmacological"]}
+            onToggle={() => onToggleSection("nonpharmacological")}
+        >
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border border-gray-200 rounded-lg bg-white">
@@ -833,13 +891,20 @@ const COPDDecisionSupport: React.FC = () => {
               </div>
             </div>
           </div>
-        </ExpandableSection>
+        </ExternalExpandableSection>
       </div>
     );
   });
   TreatmentStep.displayName = 'TreatmentStep';
   
-  const PrintReport = React.memo(() => {
+  interface PrintReportProps {
+    patientData: PatientData;
+    calculateCATScore: number | null;
+    goldGroup: 'A' | 'B' | 'E' | 'Inconnu';
+    onClose: () => void;
+  }
+
+  const PrintReport = React.memo(({ patientData, calculateCATScore, goldGroup, onClose }: PrintReportProps) => {
     const currentDate = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
     
     const getGoldGradeText = useMemo(() => {
@@ -850,8 +915,6 @@ const COPDDecisionSupport: React.FC = () => {
       if (fev1 >= 30) return 'GOLD 3 (Sévère)';
       return 'GOLD 4 (Très sévère)';
     }, [patientData.fev1Predicted]);
-
-    const goldGroup = calculateGOLDGroup;
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="report-title">
@@ -942,7 +1005,7 @@ const COPDDecisionSupport: React.FC = () => {
 
           <div className="flex justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 print-hide">
             <button
-              onClick={() => setShowPrintReport(false)}
+              onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               Fermer
@@ -961,7 +1024,7 @@ const COPDDecisionSupport: React.FC = () => {
   });
   PrintReport.displayName = 'PrintReport';
 
-  const ExacerbationStep = React.memo(() => (
+  const ExacerbationStep = React.memo((props: StepComponentCommonProps) => ( // Assuming it uses common props for now
     <div className="space-y-6">
       <div className="bg-red-50 p-4 rounded-lg border border-red-200">
         <h3 className="text-lg font-semibold text-red-800 mb-2">Gestion des exacerbations BPCO</h3>
@@ -984,7 +1047,7 @@ const COPDDecisionSupport: React.FC = () => {
   ));
   ExacerbationStep.displayName = 'ExacerbationStep';
 
-  const FollowUpStep = React.memo(() => (
+  const FollowUpStep = React.memo((props: StepComponentCommonProps) => ( // Assuming it uses common props for now
     <div className="space-y-6">
       <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
         <h3 className="text-lg font-semibold text-indigo-800 mb-2">Suivi et gestion à long terme</h3>
@@ -1008,17 +1071,74 @@ const COPDDecisionSupport: React.FC = () => {
   ));
   FollowUpStep.displayName = 'FollowUpStep';
 
-  const steps = useMemo((): StepDefinition[] => [
-    { id: 'patient-info', title: 'Patient', icon: User as IconComponent, component: PatientInfoStep },
-    { id: 'diagnostic', title: 'Diagnostic', icon: Calculator as IconComponent, component: DiagnosticStep },
-    { id: 'assessment', title: 'Évaluation', icon: Activity as IconComponent, component: AssessmentStep },
-    { id: 'treatment', title: 'Traitement', icon: Settings as IconComponent, component: TreatmentStep },
-    { id: 'exacerbation', title: 'Exacerbations', icon: AlertTriangle as IconComponent, component: ExacerbationStep },
-    { id: 'followup', title: 'Suivi', icon: FileText as IconComponent, component: FollowUpStep }
-  ], []); // Removed component dependencies as they are memoized and stable
+  // Redefine StepDefinitionType to use the common props or specific ones
+  interface AppStepDefinition<P = StepComponentCommonProps> extends Omit<StepDefinitionType, 'component'> {
+    component: React.FC<P>;
+  }
+  
+  // CAT Modal related state and handlers
+  const [isCATModalOpen, setCATModalOpen] = useState(false);
+  const handleOpenCATModal = useCallback(() => setCATModalOpen(true), []);
+  const handleCloseCATModal = useCallback(() => setCATModalOpen(false), []);
+
+  const handleSubmitCATScores = useCallback((submittedScores: CATScoreFields) => {
+    startTransition(() => {
+      setPatientData(prev => ({ ...prev, ...submittedScores }));
+      const allFilled = Object.values(submittedScores).every(val => val !== '' && val !== undefined && val !== null);
+      if (allFilled) {
+          clearValidationError('catScore');
+      }
+    });
+    handleCloseCATModal();
+  }, [clearValidationError, handleCloseCATModal, startTransition]); // setPatientData is stable
+
+
+  const catQuestions = useMemo((): CATQuestion[] => [
+    { field: 'catCough', question: 'Je ne tousse jamais', opposite: 'Je tousse tout le temps', description: 'Fréquence de la toux' },
+    { field: 'catPhlegm', question: 'Je n\'ai pas de glaires (mucus) dans la poitrine', opposite: 'Ma poitrine est complètement pleine de glaires (mucus)', description: 'Production d\'expectorations' },
+    { field: 'catChestTightness', question: 'Ma poitrine ne me semble pas du tout serrée', opposite: 'Ma poitrine me semble très serrée', description: 'Sensation d\'oppression thoracique' },
+    { field: 'catBreathlessness', question: 'Quand je marche en montée ou que je monte un étage, je ne suis pas essoufflé(e)', opposite: 'Quand je marche en montée ou que je monte un étage, je suis très essoufflé(e)', description: 'Dyspnée à l\'effort' },
+    { field: 'catActivityLimitation', question: 'Mes activités à la maison ne sont pas du tout limitées', opposite: 'Mes activités à la maison sont très limitées', description: 'Limitation des activités domestiques' },
+    { field: 'catConfidenceLeaving', question: 'Je sors de chez moi en toute confiance malgré ma maladie pulmonaire', opposite: 'Je n\'ai pas du tout confiance à sortir de chez moi à cause de ma maladie pulmonaire', description: 'Confiance pour sortir' },
+    { field: 'catSleep', question: 'Je dors très bien', opposite: 'Je ne dors pas bien du tout à cause de ma maladie pulmonaire', description: 'Qualité du sommeil' },
+    { field: 'catEnergy', question: 'J\'ai beaucoup d\'énergie', opposite: 'Je n\'ai pas d\'énergie du tout', description: 'Niveau d\'énergie' }
+  ], []);
+
+  const currentCATDataForModal = useMemo((): CATScoreFields => ({
+      catCough: patientData.catCough,
+      catPhlegm: patientData.catPhlegm,
+      catChestTightness: patientData.catChestTightness,
+      catBreathlessness: patientData.catBreathlessness,
+      catActivityLimitation: patientData.catActivityLimitation,
+      catConfidenceLeaving: patientData.catConfidenceLeaving,
+      catSleep: patientData.catSleep,
+      catEnergy: patientData.catEnergy,
+  }), [
+      patientData.catCough, patientData.catPhlegm, patientData.catChestTightness, 
+      patientData.catBreathlessness, patientData.catActivityLimitation, 
+      patientData.catConfidenceLeaving, patientData.catSleep, patientData.catEnergy
+  ]);
+
+
+  const steps = useMemo((): AppStepDefinition<any>[] => [
+    { id: 'patient-info', title: 'Patient', icon: User as IconComponent, component: PatientInfoStep as React.FC<PatientInfoStepProps> },
+    { id: 'diagnostic', title: 'Diagnostic', icon: Calculator as IconComponent, component: DiagnosticStep as React.FC<StepComponentCommonProps>},
+    { id: 'assessment', title: 'Évaluation', icon: Activity as IconComponent, component: AssessmentStep as React.FC<AssessmentStepProps> },
+    { id: 'treatment', title: 'Traitement', icon: Settings as IconComponent, component: TreatmentStep as React.FC<TreatmentStepProps>},
+    { id: 'exacerbation', title: 'Exacerbations', icon: AlertTriangle as IconComponent, component: ExacerbationStep as React.FC<StepComponentCommonProps> },
+    { id: 'followup', title: 'Suivi', icon: FileText as IconComponent, component: FollowUpStep as React.FC<StepComponentCommonProps> }
+  ], []);
 
   const currentStepIndex = steps.findIndex(step => step.id === currentStep);
-  const CurrentStepComponent = steps[currentStepIndex]?.component;
+  const CurrentStepConfig = steps[currentStepIndex];
+  
+  const commonStepProps: StepComponentCommonProps = useMemo(() => ({
+    patientData,
+    handleFieldChange,
+    validationErrors,
+    expandedSections,
+    onToggleSection: handleToggleSection,
+  }), [patientData, handleFieldChange, validationErrors, expandedSections, handleToggleSection]);
 
   const canProceedToNext = useMemo(() => {
     if (currentStep === 'patient-info') {
@@ -1043,18 +1163,20 @@ const COPDDecisionSupport: React.FC = () => {
             });
        }
     }
-  }, [validateCurrentStep, canProceedToNext, steps, currentStepIndex]);
+  }, [validateCurrentStep, canProceedToNext, steps, currentStepIndex, startTransition]);
 
   const handlePrevious = useCallback(() => {
     startTransition(() => {
       setCurrentStep(steps[Math.max(0, currentStepIndex - 1)].id);
       window.scrollTo(0, 0);
     });
-  }, [steps, currentStepIndex]);
+  }, [steps, currentStepIndex, startTransition]);
   
-  if (!CurrentStepComponent) {
+  if (!CurrentStepConfig || !CurrentStepConfig.component) {
     return <div className="p-8 text-center text-red-500">Erreur: Étape non trouvée. Veuillez rafraîchir la page.</div>;
   }
+  const CurrentStepComponent = CurrentStepConfig.component;
+
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -1116,7 +1238,26 @@ const COPDDecisionSupport: React.FC = () => {
         </nav>
 
         <main className="bg-white rounded-xl shadow-xl p-4 sm:p-6 lg:p-8">
-          <CurrentStepComponent />
+           {CurrentStepConfig.id === 'patient-info' && <CurrentStepComponent {...commonStepProps} />}
+           {CurrentStepConfig.id === 'diagnostic' && <CurrentStepComponent {...commonStepProps} />}
+           {CurrentStepConfig.id === 'assessment' && 
+             <CurrentStepComponent 
+                {...commonStepProps}
+                isCATModalOpen={isCATModalOpen}
+                onOpenCATModal={handleOpenCATModal}
+                onCloseCATModal={handleCloseCATModal}
+                onSubmitCATScores={handleSubmitCATScores}
+                currentCATDataForModal={currentCATDataForModal}
+                catQuestions={catQuestions}
+                calculateCATScore={calculateCATScore} 
+             />}
+           {CurrentStepConfig.id === 'treatment' && 
+            <CurrentStepComponent 
+                {...commonStepProps} 
+                goldGroup={calculateGOLDGroup}
+                calculateCATScore={calculateCATScore}
+            />}
+           {(CurrentStepConfig.id === 'exacerbation' || CurrentStepConfig.id === 'followup') && <CurrentStepComponent {...commonStepProps} />}
         </main>
 
         <nav className="flex flex-col sm:flex-row justify-between items-center mt-8 space-y-3 sm:space-y-0" aria-label="Navigation entre les étapes">
@@ -1171,7 +1312,13 @@ const COPDDecisionSupport: React.FC = () => {
           </aside>
         )}
 
-        {showPrintReport && <PrintReport />}
+        {showPrintReport && 
+            <PrintReport 
+                patientData={patientData} 
+                calculateCATScore={calculateCATScore} 
+                goldGroup={calculateGOLDGroup} 
+                onClose={() => setShowPrintReport(false)} 
+            />}
 
         <footer className="mt-12 pt-8 border-t border-gray-300 text-center">
           <p className="text-xs text-gray-500">
@@ -1182,6 +1329,15 @@ const COPDDecisionSupport: React.FC = () => {
           </p>
         </footer>
       </div>
+      {isCATModalOpen && ( // Ensure CAT modal is rendered at the top level if it's controlled here.
+            <CATScoreModal
+                isOpen={isCATModalOpen}
+                onClose={handleCloseCATModal}
+                onSubmit={handleSubmitCATScores}
+                initialData={currentCATDataForModal}
+                catQuestions={catQuestions}
+            />
+        )}
     </div>
   );
 };
