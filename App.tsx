@@ -1,3 +1,6 @@
+// IMPORTANT: Ce fichier est en TypeScript avec JSX (.tsx).
+// Pour qu'il s'exécute correctement dans un navigateur, il DOIT être transpilé en JavaScript standard (par exemple, via un processus de build avec Vite, Parcel, Webpack, ou Next.js).
+// L'erreur "Invalid or unexpected token" se produit souvent si le navigateur reçoit directement du code TSX/JSX.
 
 import React, { useState, useCallback, useMemo, useTransition, useDeferredValue, useEffect } from 'react';
 import { PatientData, ValidationErrors, CATQuestion, StepDefinition as StepDefinitionType, TreatmentRecommendation, CATScoreFields } from './types'; // Renamed StepDefinition to StepDefinitionType to avoid conflict
@@ -1455,11 +1458,11 @@ export const COPDDecisionSupport: React.FC = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
         <header className="mb-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-3">
-            Outil d'Aide à la Décision BPCO
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
+            Aide à la décision dans la BPCO
           </h1>
           <p className="text-gray-600 text-base sm:text-lg">
-            Basé sur les recommandations{' '}
+            Prise en charge de la BPCO basée sur les recommandations{' '}
             <a 
               href="https://goldcopd.org/2025-gold-report-home/" 
               target="_blank"

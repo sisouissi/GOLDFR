@@ -170,8 +170,43 @@
 <link rel="stylesheet" href="/index.css">
 </head>
   <body>
+    <!-- 
+      ! ! ! IMPORTANT - LISEZ CECI SI L'APPLICATION NE S'AFFICHE PAS ! ! !
+      =============================================================================
+      ERREUR DANS LA CONSOLE : "Uncaught SyntaxError: Unexpected end of input" 
+                             ou "Uncaught SyntaxError: Invalid or unexpected token" ?
+      =============================================================================
+      Cette application est écrite en TypeScript (.ts) et JSX (.tsx). 
+      Les navigateurs web ne comprennent PAS ces langages directement.
+      Ils ont besoin de JavaScript standard (.js).
+
+      POUR QUE CELA FONCTIONNE, VOUS DEVEZ :
+      1. UTILISER UN OUTIL DE BUILD/COMPILATION :
+         - Exemples : Vite (recommandé), Next.js, Create React App, Parcel.
+         - Ces outils CONVERTISSENT les fichiers .tsx en .js que le navigateur peut lire.
+
+      2. CONFIGURER VOTRE PROJET :
+         - Suivez les instructions de l'outil de build choisi pour un projet React avec TypeScript.
+
+      3. BUILD (COMPILER) VOTRE APPLICATION :
+         - Exécutez la commande de build (souvent `npm run build` ou `yarn build`).
+         - Cela créera un dossier (ex: `dist/` ou `build/`) contenant les fichiers HTML, JS, CSS optimisés.
+      
+      4. DÉPLOYER LE DOSSIER DE BUILD :
+         - Hébergez le contenu de CE dossier (et non vos fichiers sources .tsx) sur Vercel ou un autre hébergeur.
+
+      POUR VERCEL :
+      - Assurez-vous que votre projet Vercel est configuré avec le bon "Framework Preset" 
+        (ex: Vite, Next.js, Create React App). Vercel lancera alors le build automatiquement.
+      - Si vous utilisez "Other" (site statique), Vercel ne fera PAS de build. Vous devrez builder 
+        localement et déployer le dossier de build, ou configurer les commandes de build dans Vercel.
+
+      Le script ci-dessous <script type="module" src="./index.tsx"></script> TENTERA de charger 
+      le fichier .tsx directement, ce qui provoquera une erreur SANS build.
+    -->
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+    <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>
