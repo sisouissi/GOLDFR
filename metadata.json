@@ -1,0 +1,5 @@
+{
+  "name": "COPD Decision Support GOLD 2025",
+  "description": "A React and Tailwind CSS application for COPD (Chronic Obstructive Pulmonary Disease) decision support, based on GOLD 2025 guidelines. It assists healthcare professionals in patient assessment, diagnosis, and treatment recommendations.",
+  "requestFramePermissions": []
+}
